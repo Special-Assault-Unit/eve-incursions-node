@@ -2,10 +2,11 @@ version: "3.7"
 
 services:
   server:
-    command: sh -c "npm i && npm build && npm start"
+    command: sh -c "npm i && npm run single "
     restart: unless-stopped
+
   frontend:
-    command: sh -c "npm i && npm run single"
+    command: sh -c "npm i && npm build && npm start"
     restart: unless-stopped
 
   mysql:
