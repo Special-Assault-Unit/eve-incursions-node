@@ -1,4 +1,4 @@
-:80 :443 {
+eve-incursions.de {
 	reverse_proxy /api/* server:4001
 	reverse_proxy /* frontend:3000
 }
