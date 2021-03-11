@@ -21,8 +21,6 @@ services:
     command: sh -c "npm i && npm run dev"
     working_dir: /eve-incursions/frontend
     restart: unless-stopped
-    #ports:
-    #- 4002:3000
     volumes:
       - ./:/eve-incursions
 
@@ -45,7 +43,6 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./Caddyfile.dev:/etc/caddy/Caddyfile
       - caddy_data:/data
       - caddy_config:/config
 

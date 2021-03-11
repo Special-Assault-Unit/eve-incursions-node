@@ -83,7 +83,6 @@ export class Spawn extends BaseEntity {
       });
 
       const missing = maxEntries - influenceLogs.length;
-      console.log(missing)
       const filler = missing ? (Array(missing).fill(0)) : [];
       return [...filler, ...influenceLogs.map(i => i.influence * 100)] as number[];
     })();
