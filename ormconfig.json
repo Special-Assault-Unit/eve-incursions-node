@@ -1,7 +1,0 @@
-{
-  "type": "mysql",
-  "host": "127.0.0.1",
-  "username": "root",
-  "database": "eve-incursions",
-  "entities": ["./src/models/*.ts"]
-}
