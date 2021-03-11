@@ -6,7 +6,7 @@ services:
     restart: unless-stopped
 
   frontend:
-    command: sh -c "npm i && npm build && npm start"
+    command: sh -c "npm i && npm run build && npm start"
     restart: unless-stopped
 
   mysql:
