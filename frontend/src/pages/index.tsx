@@ -3,13 +3,22 @@ import {GraphQLClient} from 'graphql-request';
 import {ActiveSpawnsQuery, getSdk} from '../lib/graphql';
 import {Spawn} from '../components/spawn/spawn';
 import Link from 'next/link';
+import {redisGet, redisSet} from '../lib/redis';
 
 export const getServerSideProps = async () => {
-  const client = new GraphQLClient('http://server:4001');
-  const sdk = getSdk(client);
-  const {activeSpawns} = await sdk.activeSpawns();
+  console.log(process.env)
+  const cache = await redisGet('spawns');
+  if (cache !== null && (!process.env.NODE_ENV || process.env.NODE_ENV !== 'development')) {
+    return {props: {activeSpawns: JSON.parse(cache)}};
+  } else {
+    const client = new GraphQLClient('http://server:4001');
+    const sdk = getSdk(client);
+    const {activeSpawns} = await sdk.activeSpawns();
 
-  return {props: {activeSpawns}};
+    await redisSet('spawns', JSON.stringify(activeSpawns));
+
+    return {props: {activeSpawns}};
+  }
 };
 
 

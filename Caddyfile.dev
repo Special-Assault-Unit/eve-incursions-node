@@ -1,4 +1,9 @@
 localhost {
 	reverse_proxy /api/* server:4001
 	reverse_proxy /* frontend:3000
+
+	@cachedFiles {
+        path *.jpg *.jpeg *.png *.gif *.ico *.svg
+    }
+    header @cachedFiles Cache-Control "public, max-age=604800, must-revalidate"
 }

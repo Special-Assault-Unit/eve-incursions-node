@@ -6,6 +6,7 @@ import {SpawnLog} from '../models/SpawnLog';
 import {capitalize} from '../lib/utils';
 import {InfluenceLogEntry} from '../models/InfluenceLogEntry';
 import {In, Not} from 'typeorm';
+import {redisDel} from '../lib/redis';
 
 interface APISpawns {
   constellation_id: number;
@@ -28,6 +29,7 @@ export const updateSpawns = async (doInfluenceLogs = false) => {
     }
   });
   const spawns: APISpawns[] = await res.json();
+  let changed = false;
 
   try {
     await connection.manager.transaction(async manager => {
@@ -76,6 +78,7 @@ export const updateSpawns = async (doInfluenceLogs = false) => {
           spawnLog.date = new Date();
           spawnLog.state = capitalize(spawn.state);
           await manager.save(spawnLog);
+          changed = true
         }
 
         if (doInfluenceLogs) {
@@ -84,12 +87,14 @@ export const updateSpawns = async (doInfluenceLogs = false) => {
           influenceLog.spawn = dbSpawn as any;
           influenceLog.date = new Date();
           await manager.save(influenceLog);
+          changed = true;
         }
       }
 
       const endedSpawns = await Spawn.find({where: {active: true, id: Not(In(updatedSpawns))}});
 
       for (const endedSpawn of endedSpawns) {
+        changed = true;
         endedSpawn.state = "Ended";
         endedSpawn.active = false;
         endedSpawn.endedAt = new Date();
@@ -108,6 +113,7 @@ export const updateSpawns = async (doInfluenceLogs = false) => {
     await connection.close();
   }
 
+  if (changed) redisDel('spawns');
 
   await connection.close();
 };
