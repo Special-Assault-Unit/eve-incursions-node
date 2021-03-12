@@ -13,8 +13,7 @@ export const Spawn = ({spawn}: { spawn: ActiveSpawnsQuery['activeSpawns'][0] }) 
       <div className="information container">
         <div className="row">
           <div className="col-2">
-            <img style={{width: '50px'}}
-                 src={`https://images.evetech.net/${spawn.stagingSystem.sovereigntyHolderID < 600000 ? 'corporations' : 'alliances' }/${spawn.stagingSystem.sovereigntyHolderID}/logo?size=64`}
+            <img src={`https://images.evetech.net/${spawn.stagingSystem.sovereigntyHolderID < 600000 ? 'corporations' : 'alliances' }/${spawn.stagingSystem.sovereigntyHolderID}/logo?size=64`}
                  title={'sovholder'} alt={'sovholder'}/>
           </div>
           <div className="col-10">

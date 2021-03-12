@@ -1,5 +1,7 @@
 import "reflect-metadata";
 import {updateSpawns} from './commands/updateSpawns';
+import {updateSovereignty} from './commands/updateSovereignty';
+import {redisClient} from './lib/redis';
 
 const run = async () => {
   if (process.argv.length < 3) {
@@ -12,10 +14,13 @@ const run = async () => {
   if (command === "updateSpawns") {
     const influenceLogs = args.indexOf('--influenceLogs') !== -1;
     await updateSpawns(influenceLogs);
-
+  } else if (command === "updateSovereignty") {
+    await updateSovereignty();
   } else {
     console.log(`${command} not found`);
   }
+
+  redisClient.quit();
 };
 
 run().catch(e => console.log(e));
