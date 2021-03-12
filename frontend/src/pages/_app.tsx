@@ -1,6 +1,6 @@
 import '../styles/globals.scss';
 import {AppProps} from 'next/app';
-import React from 'react';
+import React, {useEffect} from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
 import {ThemeToggle} from '../components/theme-toggle/theme-toggle';
@@ -9,6 +9,13 @@ import Container from 'react-bootstrap/Container';
 
 
 function MyApp({Component, pageProps}: AppProps) {
+  useEffect(() => {
+    if('serviceWorker' in navigator) {
+      navigator.serviceWorker
+        .register('/sw.js').catch();
+    }
+  }, []);
+
   return (
     <>
       <Head>
