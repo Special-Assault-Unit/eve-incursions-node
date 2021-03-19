@@ -17,6 +17,7 @@
     "apollo-server": "^2.19.0",
     "concurrently": "^6.0.0",
     "graphql": "^15.5.0",
+    "ioredis": "^4.24.0",
     "mysql": "^2.18.1",
     "node-fetch": "^2.6.1",
     "node-schedule": "^2.0.0",

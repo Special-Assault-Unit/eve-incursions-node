@@ -9,7 +9,7 @@ export const Spawn = ({spawn}: { spawn: ActiveSpawnsQuery['activeSpawns'][0] }) 
     <div className="spawn">
       <h1 className="h3"><a
         href={`http://evemaps.dotlan.net/map/${spawn.constellation.region.name}/${spawn.constellation.name}#radius`}
-        target="_blank">{spawn.constellation.name}</a></h1>
+        target="_blank" rel="noopener">{spawn.constellation.name}</a></h1>
       <div className="information container">
         <div className="row">
           <div className="col-2">
@@ -35,11 +35,11 @@ export const Spawn = ({spawn}: { spawn: ActiveSpawnsQuery['activeSpawns'][0] }) 
 
               <dt className="col-sm-6">Region</dt>
               <dd className="col-sm-6"><a href={`http://evemaps.dotlan.net/map/${spawn.constellation.region.name}`}
-                                          target="_blank">{spawn.constellation.region.name}</a></dd>
+                                          target="_blank" rel="noopener">{spawn.constellation.region.name}</a></dd>
 
               <dt className="col-sm-6">Stag. System</dt>
               <dd className="col-sm-6"><a href={`http://evemaps.dotlan.net/system/${spawn.stagingSystem.name}`}
-                                          target="_blank">{spawn.stagingSystem.name}</a></dd>
+                                          target="_blank" rel="noopener">{spawn.stagingSystem.name}</a></dd>
 
               <dt className="col-sm-6">Sec. Status</dt>
               <dd className={`col-sm-6 sec sec-${spawn.stagingSystem.securityArea}`}>{spawn.stagingSystem.security}</dd>

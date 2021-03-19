@@ -56,11 +56,11 @@ export default function Home({spawnLogs, total}: HistoryProps) {
               <td>{date.toLocaleTimeString('de-DE', {timeStyle: 'short'})}</td>
               <td><a
                 href={`http://evemaps.dotlan.net/map/${logEntry.spawn.constellation.region.name}/${logEntry.spawn.constellation.name}#radius`}
-                target="_blank">{logEntry.spawn.constellation.name}</a></td>
+                target="_blank" rel="noopener">{logEntry.spawn.constellation.name}</a></td>
               <td className="hidden-xs"><a href={`http://evemaps.dotlan.net/map/${logEntry.spawn.constellation.region.name}`}
-                                           target="_blank">{logEntry.spawn.constellation.region.name}</a></td>
+                                           target="_blank" rel="noopener">{logEntry.spawn.constellation.region.name}</a></td>
               <td><a href={`http://evemaps.dotlan.net/system/${logEntry.spawn.stagingSystem.name}`}
-                     target="_blank">{logEntry.spawn.stagingSystem.name}</a></td>
+                     target="_blank" rel="noopener">{logEntry.spawn.stagingSystem.name}</a></td>
               <td className={`state state-${logEntry.state.toLocaleLowerCase()}`}>{logEntry.state}</td>
               <td>
                 <img style={{width: '16px'}}

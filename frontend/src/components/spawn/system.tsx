@@ -15,7 +15,7 @@ export const System = ({system}: { system: ActiveSpawnsQuery['activeSpawns'][0][
             </span>
           }
         </div>
-        <div className="col-4"><a href={`http://evemaps.dotlan.net/system/${system.name}`} target="_blank">{system.name}</a></div>
+        <div className="col-4"><a href={`http://evemaps.dotlan.net/system/${system.name}`} target="_blank" rel="noopener">{system.name}</a></div>
         <div className={`col text-right sec sec-${system.securityArea}`}>{system.security}</div>
         <div className="col text-right">{system.size} AU</div>
       </div>

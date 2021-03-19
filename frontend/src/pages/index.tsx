@@ -6,7 +6,6 @@ import Link from 'next/link';
 import {redisGet, redisSet} from '../lib/redis';
 
 export const getServerSideProps = async () => {
-  console.log(process.env)
   const cache = await redisGet('spawns');
   if (cache !== null && (!process.env.NODE_ENV || process.env.NODE_ENV !== 'development')) {
     return {props: {activeSpawns: JSON.parse(cache)}};
