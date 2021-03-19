@@ -11,6 +11,9 @@ class MyDocument extends Document {
       <Html lang={'en'}>
         <Head>
           <link rel="manifest" href="/site.webmanifest" />
+          <meta name="Description" content="Get the current all the current and past incursion spawns for EVE Online. With useful information you can't get anywhere else." />
+          <meta name="theme-color" content="#212529"/>
+          <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         </Head>
         <body>
         <script dangerouslySetInnerHTML={{__html: `

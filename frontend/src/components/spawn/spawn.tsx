@@ -21,7 +21,7 @@ export const Spawn = ({spawn}: { spawn: ActiveSpawnsQuery['activeSpawns'][0] }) 
               <dt className="col-sm-6">Influence</dt>
               <dd className="col-sm-6">
                 <div className="progress">
-                  <div className="progress-bar" role="progressbar"
+                  <div className="progress-bar" role="progressbar" aria-label={'Influence'}
                        style={{width: Math.round(spawn.influence * 100) + '%'}}
                        aria-valuenow={spawn.influence * 100} aria-valuemin={0}
                        aria-valuemax={100}/>
