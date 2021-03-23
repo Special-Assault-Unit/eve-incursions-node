@@ -18,15 +18,15 @@ interface APINames {
 export const updateSovereignty = async () => {
   const connection = await createConnection();
 
-  const res = await fetch('https://esi.evetech.net/latest/sovereignty/map', {
-    headers: {
-      'User-Agent': 'eve-incursions.de@lars.naurath@gmail.de'
-    }
-  });
-  const sovSystems: APISovereignty[] = await res.json();
-  const queryAlliances: number[] = [];
-
   try {
+    const res = await fetch('https://esi.evetech.net/latest/sovereignty/map', {
+      headers: {
+        'User-Agent': 'eve-incursions.de@lars.naurath@gmail.de'
+      }
+    });
+    const sovSystems: APISovereignty[] = await res.json();
+    const queryAlliances: number[] = [];
+
     await connection.manager.transaction(async manager => {
       for await (const sovSystem of sovSystems) {
         if (!sovSystem.alliance_id && !sovSystem.faction_id) continue;

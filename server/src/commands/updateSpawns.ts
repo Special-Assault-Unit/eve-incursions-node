@@ -23,15 +23,16 @@ interface APISpawns {
 export const updateSpawns = async (doInfluenceLogs = false) => {
   const connection = await createConnection();
 
-  const res = await fetch("https://esi.evetech.net/latest/incursions", {
-    headers: {
-      "User-Agent": "eve-incursions.de@lars.naurath@gmail.de"
-    }
-  });
-  const spawns: APISpawns[] = await res.json();
-  let changed = false;
-
   try {
+    const res = await fetch("https://esi.evetech.net/latest/incursions", {
+      headers: {
+        "User-Agent": "eve-incursions.de@lars.naurath@gmail.de"
+      }
+    });
+    const spawns: APISpawns[] = await res.json();
+
+    let changed = false;
+
     await connection.manager.transaction(async manager => {
       const updatedSpawns = [];
 
@@ -108,12 +109,14 @@ export const updateSpawns = async (doInfluenceLogs = false) => {
       }
 
     });
+
+    if (changed) redisDel('spawns');
   } catch (e) {
     console.error(e);
     await connection.close();
   }
 
-  if (changed) redisDel('spawns');
+
 
   await connection.close();
 };
