@@ -2,18 +2,21 @@ import {scheduleJob} from 'node-schedule';
 import {updateSpawns} from './commands/updateSpawns';
 import waitPort from 'wait-port';
 import {updateSovereignty} from './commands/updateSovereignty';
+import {createConnection} from 'typeorm';
 
-waitPort({host: process.env.MYSQL_HOST, port: 3306}).then(() => {
+waitPort({host: process.env.MYSQL_HOST, port: 3306}).then(async () => {
+  const connection = await createConnection();
+
   scheduleJob('5,10,15,20,25,30,35,40,45,50,55 * * * *', async () => {
-    await updateSpawns();
+    await updateSpawns(connection);
   });
 
   scheduleJob('0 * * * *', async () => {
-    await updateSpawns(true);
+    await updateSpawns(connection, true);
   });
 
   scheduleJob('30 * * * *', async () => {
-    await updateSovereignty();
+    await updateSovereignty(connection);
   });
 }).catch(e => console.error(e));
 

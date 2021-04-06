@@ -1,6 +1,7 @@
 import {createConnection} from '../lib/db';
 import fetch from 'node-fetch';
 import {System} from '../models/System';
+import {Connection} from 'typeorm';
 
 interface APISovereignty {
   system_id: number;
@@ -15,61 +16,52 @@ interface APINames {
   name: string;
 }
 
-export const updateSovereignty = async () => {
-  const connection = await createConnection();
+export const updateSovereignty = async (connection: Connection) => {
 
-  try {
-    const res = await fetch('https://esi.evetech.net/latest/sovereignty/map', {
-      headers: {
-        'User-Agent': 'eve-incursions.de@lars.naurath@gmail.de'
-      }
-    });
-    const sovSystems: APISovereignty[] = await res.json();
-    const queryAlliances: number[] = [];
+  const res = await fetch('https://esi.evetech.net/latest/sovereignty/map', {
+    headers: {
+      'User-Agent': 'eve-incursions.de@lars.naurath@gmail.de'
+    }
+  });
+  const sovSystems: APISovereignty[] = await res.json();
+  const queryAlliances: number[] = [];
 
-    await connection.manager.transaction(async manager => {
-      for await (const sovSystem of sovSystems) {
-        if (!sovSystem.alliance_id && !sovSystem.faction_id) continue;
-        const dbSystem = await System.findOne(sovSystem.system_id);
+  await connection.manager.transaction(async manager => {
+    for await (const sovSystem of sovSystems) {
+      if (!sovSystem.alliance_id && !sovSystem.faction_id) continue;
+      const dbSystem = await System.findOne(sovSystem.system_id);
 
-        if (!dbSystem) continue;
+      if (!dbSystem) continue;
 
-        const sovId = sovSystem.alliance_id ?? sovSystem.faction_id;
+      const sovId = sovSystem.alliance_id ?? sovSystem.faction_id;
 
-        if (sovId !== dbSystem.sovereigntyHolderID) {
-          dbSystem.sovereigntyHolderID = sovId;
+      if (sovId !== dbSystem.sovereigntyHolderID) {
+        dbSystem.sovereigntyHolderID = sovId;
 
-          await manager.save(dbSystem);
+        await manager.save(dbSystem);
 
-          if (!queryAlliances.includes(sovId)) {
-            queryAlliances.push(sovId);
-          }
+        if (!queryAlliances.includes(sovId)) {
+          queryAlliances.push(sovId);
         }
       }
+    }
 
-      if (queryAlliances.length === 0) return;
+    if (queryAlliances.length === 0) return;
 
-      for (let i = 0; i <= queryAlliances.length; i += 1000) {
-        const nameRes = await fetch('https://esi.evetech.net/latest/universe/names', {
-          headers: {
-            'User-Agent': 'eve-incursions.de@lars.naurath@gmail.de',
-          },
-          method: 'post',
-          body: JSON.stringify(queryAlliances.slice(i, i + 1000))
-        });
+    for (let i = 0; i <= queryAlliances.length; i += 1000) {
+      const nameRes = await fetch('https://esi.evetech.net/latest/universe/names', {
+        headers: {
+          'User-Agent': 'eve-incursions.de@lars.naurath@gmail.de',
+        },
+        method: 'post',
+        body: JSON.stringify(queryAlliances.slice(i, i + 1000))
+      });
 
-        const names: APINames[] = await nameRes.json();
+      const names: APINames[] = await nameRes.json();
 
-        for await (const {name, id} of names) {
-          await manager.createQueryBuilder().update(System).set({sovereigntyHolderName: name}).where({sovereigntyHolderID: id});
-        }
+      for await (const {name, id} of names) {
+        await manager.createQueryBuilder().update(System).set({sovereigntyHolderName: name}).where({sovereigntyHolderID: id});
       }
-    });
-  } catch (e) {
-    console.error(e);
-    await connection.close();
-    return;
-  }
-
-  await connection.close();
+    }
+  });
 };
