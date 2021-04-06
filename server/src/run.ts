@@ -2,7 +2,7 @@ import "reflect-metadata";
 import {updateSpawns} from './commands/updateSpawns';
 import {updateSovereignty} from './commands/updateSovereignty';
 import {redisClient} from './lib/redis';
-import {createConnection} from 'typeorm';
+import {createConnection} from './lib/db';
 
 const run = async () => {
   const connection = await createConnection();

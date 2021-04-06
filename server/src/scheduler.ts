@@ -2,7 +2,7 @@ import {scheduleJob} from 'node-schedule';
 import {updateSpawns} from './commands/updateSpawns';
 import waitPort from 'wait-port';
 import {updateSovereignty} from './commands/updateSovereignty';
-import {createConnection} from 'typeorm';
+import {createConnection} from './lib/db';
 
 waitPort({host: process.env.MYSQL_HOST, port: 3306}).then(async () => {
   const connection = await createConnection();
