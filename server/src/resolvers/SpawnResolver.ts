@@ -1,5 +1,7 @@
-import {Resolver, Query} from 'type-graphql';
+import {Query, Resolver, UseMiddleware} from 'type-graphql';
 import {Spawn} from '../models/Spawn';
+import {LastHsSpawn} from '../models/LastHsSpawn';
+import {getRepository} from 'typeorm';
 
 @Resolver()
 export class SpawnResolver {
@@ -11,5 +13,34 @@ export class SpawnResolver {
   @Query(() => [Spawn])
   activeSpawns() {
     return Spawn.find({where: {active: true}});
+  }
+
+  @Query(() => LastHsSpawn)
+  async lastHighSecSpawn() {
+    let date = null;
+    const hasActiveHSSpawn = await getRepository(Spawn)
+      .createQueryBuilder('spawn')
+      .leftJoin("spawn.constellation", "constellation")
+      .leftJoin("constellation.systems", "system")
+      .where("system.security >= 0.5")
+      .andWhere("system.type = 'Staging'")
+      .andWhere("spawn.active = 1")
+      .getCount();
+
+    if (hasActiveHSSpawn === 0) {
+      const lastSpawn = await getRepository(Spawn)
+        .createQueryBuilder('spawn')
+        .select("spawn.endedAt")
+        .leftJoin("spawn.constellation", "constellation")
+        .leftJoin("constellation.systems", "system")
+        .where("system.security >= 0.5")
+        .andWhere("system.type = 'Staging'")
+        .andWhere("spawn.active = 0")
+        .orderBy("spawn.endedAt", "DESC")
+        .getOne();
+      date = lastSpawn?.endedAt;
+    }
+
+    return {date};
   }
 }

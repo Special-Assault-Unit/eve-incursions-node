@@ -33,4 +33,8 @@ query activeSpawns{
             }
         }
     }
+
+    lastHighSecSpawn {
+        date
+    }
 }

@@ -1,9 +1,10 @@
 import "reflect-metadata";
 import {updateSpawns} from './commands/updateSpawns';
 import {updateSovereignty} from './commands/updateSovereignty';
-import {redisClient} from './lib/redis';
 import {createConnection} from './lib/db';
 import {updateRats} from './commands/updateRats';
+import {calculateHSSpawn} from './commands/calculateHSSpawn';
+import {redis} from './lib/redis';
 
 const run = async () => {
   const connection = await createConnection();
@@ -22,11 +23,13 @@ const run = async () => {
     await updateSovereignty(connection);
   } else if (command === "updateRats") {
     await updateRats(connection);
+  } else if (command === "calculateHSSpawn") {
+    await calculateHSSpawn(connection);
   } else {
     console.log(`${command} not found`);
   }
 
-  redisClient.quit();
+  redis.disconnect();
   await connection.close();
 };
 

@@ -1,8 +1,3 @@
-import {createClient} from 'redis';
-import {promisify} from 'util';
+import Redis from 'ioredis';
 
-export const redisClient = createClient({
-  host: 'redis'
-});
-
-export const redisDel: (key: string | string[]) => Promise<number> = promisify(redisClient.del).bind(redisClient);
+export const redis = new Redis({host: 'redis'});

@@ -1,4 +1,3 @@
-import {createConnection} from '../lib/db';
 import fetch from 'node-fetch';
 import {Spawn} from '../models/Spawn';
 import {System} from '../models/System';
@@ -6,7 +5,7 @@ import {SpawnLog} from '../models/SpawnLog';
 import {capitalize} from '../lib/utils';
 import {InfluenceLogEntry} from '../models/InfluenceLogEntry';
 import {Connection, In, Not} from 'typeorm';
-import {redisDel} from '../lib/redis';
+import {redis} from '../lib/redis';
 
 interface APISpawns {
   constellation_id: number;
@@ -107,5 +106,5 @@ export const updateSpawns = async (connection: Connection, doInfluenceLogs = fal
 
   });
 
-  if (changed) redisDel('spawns');
+  if (changed) await redis.del('spawns');
 };

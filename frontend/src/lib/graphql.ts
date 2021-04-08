@@ -20,6 +20,7 @@ export type Query = {
   __typename?: 'Query';
   spawns: Array<Spawn>;
   activeSpawns: Array<Spawn>;
+  lastHighSecSpawn: LastHsSpawn;
   activeCommunities: Array<Community>;
   spawnLogs: PaginatedSpawnLogResponse;
   ratGroups: Array<RatGroup>;
@@ -99,6 +100,11 @@ export type SpawnLog = {
   state: Scalars['String'];
   date: Scalars['DateTime'];
   spawn: Spawn;
+};
+
+export type LastHsSpawn = {
+  __typename?: 'LastHsSpawn';
+  date: Scalars['DateTime'];
 };
 
 export type Community = {
@@ -254,7 +260,10 @@ export type ActiveSpawnsQuery = (
         )> }
       )> }
     ) }
-  )> }
+  )>, lastHighSecSpawn: (
+    { __typename?: 'LastHsSpawn' }
+    & Pick<LastHsSpawn, 'date'>
+  ) }
 );
 
 export type RatGroupsQueryVariables = Exact<{ [key: string]: never; }>;
@@ -373,6 +382,9 @@ export const ActiveSpawnsDocument = gql`
         }
       }
     }
+  }
+  lastHighSecSpawn {
+    date
   }
 }
     `;
