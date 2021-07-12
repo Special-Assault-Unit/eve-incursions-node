@@ -105,4 +105,16 @@ export class Spawn extends BaseEntity {
       return [...filler, ...influenceLogs.map(i => i.influence * 100).reverse()] as number[];
     })();
   }
+
+  @Field(() => Date)
+  get lastStateChangeDate() {
+    return (async () => {
+      const lastSpawnLog = await getConnection().manager.findOne(SpawnLog, {
+        where: {spawn: this},
+        order: {date: 'DESC'}
+      });
+
+      return lastSpawnLog?.date;
+    })();
+  }
 }

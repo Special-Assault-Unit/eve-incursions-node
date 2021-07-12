@@ -45,6 +45,7 @@ export type Spawn = {
   logs: Array<SpawnLog>;
   stagingSystem: System;
   influenceLogArray: Array<Scalars['Float']>;
+  lastStateChangeDate: Scalars['DateTime'];
 };
 
 
@@ -104,7 +105,7 @@ export type SpawnLog = {
 
 export type LastHsSpawn = {
   __typename?: 'LastHsSpawn';
-  date: Scalars['DateTime'];
+  date?: Maybe<Scalars['DateTime']>;
 };
 
 export type Community = {
@@ -241,7 +242,7 @@ export type ActiveSpawnsQuery = (
   { __typename?: 'Query' }
   & { activeSpawns: Array<(
     { __typename?: 'Spawn' }
-    & Pick<Spawn, 'state' | 'id' | 'influence' | 'boss' | 'establishedAt' | 'endedAt' | 'influenceLogArray'>
+    & Pick<Spawn, 'state' | 'id' | 'influence' | 'boss' | 'establishedAt' | 'endedAt' | 'influenceLogArray' | 'lastStateChangeDate'>
     & { stagingSystem: (
       { __typename?: 'System' }
       & Pick<System, 'sovereigntyHolderID' | 'sovereigntyHolderName' | 'name' | 'security' | 'securityArea'>
@@ -357,6 +358,7 @@ export const ActiveSpawnsDocument = gql`
     establishedAt
     endedAt
     influenceLogArray
+    lastStateChangeDate
     stagingSystem {
       sovereigntyHolderID
       sovereigntyHolderName

@@ -3,8 +3,17 @@ import {ActiveSpawnsQuery} from '../../lib/graphql';
 import {Systems} from './systems';
 import {Chart} from './chart';
 import TimeAgo from 'react-timeago';
+import Countdown from 'react-countdown';
 
 export const Spawn = ({spawn}: { spawn: ActiveSpawnsQuery['activeSpawns'][0] }) => {
+  let lifetime = 24 * 60 * 60 * 1000;
+  if (spawn.state === 'Mobilizing') {
+    lifetime *= 2;
+  } else if (spawn.state === 'Established') {
+    lifetime *= 8;
+  }
+  const maxLifetimeDate = new Date(spawn.lastStateChangeDate).getTime() + lifetime;
+
   return (
     <div className="spawn">
       <h1 className="h3"><a
@@ -13,8 +22,9 @@ export const Spawn = ({spawn}: { spawn: ActiveSpawnsQuery['activeSpawns'][0] }) 
       <div className="information container">
         <div className="row">
           <div className="col-2">
-            <img src={`https://images.evetech.net/${spawn.stagingSystem.sovereigntyHolderID < 600000 ? 'corporations' : 'alliances' }/${spawn.stagingSystem.sovereigntyHolderID}/logo?size=64`}
-                 title={spawn.stagingSystem.sovereigntyHolderName} alt={spawn.stagingSystem.sovereigntyHolderName}/>
+            <img
+              src={`https://images.evetech.net/${spawn.stagingSystem.sovereigntyHolderID < 600000 ? 'corporations' : 'alliances'}/${spawn.stagingSystem.sovereigntyHolderID}/logo?size=64`}
+              title={spawn.stagingSystem.sovereigntyHolderName} alt={spawn.stagingSystem.sovereigntyHolderName}/>
           </div>
           <div className="col-10">
             <dl className="row">
@@ -30,7 +40,7 @@ export const Spawn = ({spawn}: { spawn: ActiveSpawnsQuery['activeSpawns'][0] }) 
 
               <dt className="col-sm-6">State</dt>
               <dd className={`col-sm-6 state state-${spawn.state.toLocaleLowerCase()}`}>{spawn.state}
-                {spawn.boss && " (Boss)"}
+                {spawn.boss && ' (Boss)'}
               </dd>
 
               <dt className="col-sm-6">Region</dt>
@@ -46,14 +56,26 @@ export const Spawn = ({spawn}: { spawn: ActiveSpawnsQuery['activeSpawns'][0] }) 
 
               <dt className="col-sm-6">Started</dt>
               <dd className="col-sm-6">
-                <TimeAgo date={spawn.establishedAt} />
+                <TimeAgo date={spawn.establishedAt}/>
               </dd>
+
+
+              <>
+                <dt className="col-sm-6" title={'This is the maximum possible time the incursion will stay active'}>Max. remaining</dt>
+                <dd className="col-sm-6">
+                  <Countdown intervalDelay={spawn.state === 'Established' ? 100000 : 1000} daysInHours={true} renderer={({
+                                                                                                                           days: rawDays,
+                                                                                                                           formatted: {minutes, hours, seconds}
+                                                                                                                         }) => spawn.state === 'Established' ? `up to ${rawDays} days` : `${hours}:${minutes}:${seconds}`}
+                             date={maxLifetimeDate}/>
+                </dd>
+              </>
             </dl>
           </div>
         </div>
       </div>
-      <Chart influenceLogArray={spawn.influenceLogArray} />
-      <Systems systems={spawn.constellation.systems} />
+      <Chart influenceLogArray={spawn.influenceLogArray}/>
+      <Systems systems={spawn.constellation.systems}/>
     </div>
   );
-}
+};

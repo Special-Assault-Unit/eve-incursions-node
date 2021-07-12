@@ -7,6 +7,7 @@ query activeSpawns{
         establishedAt
         endedAt
         influenceLogArray
+        lastStateChangeDate
         stagingSystem {
             sovereigntyHolderID
             sovereigntyHolderName
