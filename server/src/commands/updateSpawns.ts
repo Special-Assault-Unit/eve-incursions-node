@@ -19,6 +19,12 @@ interface APISpawns {
 
 }
 
+const handleSpawnChange = (spawn: Spawn) => {
+  redis.publish('spawn.change', JSON.stringify({
+    spawnId: spawn.id
+  })).then();
+};
+
 export const updateSpawns = async (connection: Connection, doInfluenceLogs = false) => {
   const res = await fetch('https://esi.evetech.net/latest/incursions', {
     headers: {
@@ -76,6 +82,7 @@ export const updateSpawns = async (connection: Connection, doInfluenceLogs = fal
         spawnLog.state = capitalize(spawn.state);
         await manager.save(spawnLog);
         changed = true;
+        handleSpawnChange(dbSpawn);
       }
 
       if (doInfluenceLogs) {
@@ -96,6 +103,8 @@ export const updateSpawns = async (connection: Connection, doInfluenceLogs = fal
       endedSpawn.active = false;
       endedSpawn.endedAt = new Date();
       await manager.save(endedSpawn);
+
+      handleSpawnChange(endedSpawn);
 
       const endedSpawnLog = new SpawnLog();
       endedSpawnLog.state = 'Ended';

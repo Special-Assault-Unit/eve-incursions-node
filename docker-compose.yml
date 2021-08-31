@@ -43,6 +43,7 @@ services:
       - caddy_config:/config
 
   redis:
+    restart: unless-stopped
     image: library/redis:6
 
 
