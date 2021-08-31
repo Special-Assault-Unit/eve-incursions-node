@@ -46,7 +46,7 @@ export const Spawn = ({spawn}: { spawn: ActiveSpawnsQuery['activeSpawns'][0] }) 
 
               <dt className="col-sm-6">Region</dt>
               <dd className="col-sm-6"><a href={`https://evemaps.dotlan.net/map/${dotlanTransform(spawn.constellation.region.name)}`}
-                                          target="_blank" rel="noopener">{dotlanTransform(spawn.constellation.region.name)}</a></dd>
+                                          target="_blank" rel="noopener">{spawn.constellation.region.name}</a></dd>
 
               <dt className="col-sm-6">Stag. System</dt>
               <dd className="col-sm-6"><a href={`https://evemaps.dotlan.net/system/${dotlanTransform(spawn.stagingSystem.name)}`}
