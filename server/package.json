@@ -7,11 +7,12 @@
     "start": "node_modules/.bin/nodemon -w src --ext ts --exec ts-node src/index.ts",
     "single": "node_modules/.bin/ts-node src/index.ts",
     "scheduler": "node_modules/.bin/ts-node src/scheduler.ts",
+    "subscriber": "node_modules/.bin/ts-node src/subscriber.ts",
     "spawns:update": "node_modules/.bin/ts-node src/run.ts updateSpawns",
     "sov:update": "node_modules/.bin/ts-node src/run.ts updateSovereignty",
     "rats:update": "node_modules/.bin/ts-node src/run.ts updateRats",
     "hsspawn:calculate": "node_modules/.bin/ts-node src/run.ts calculateHSSpawn",
-    "prod": "node_modules/.bin/concurrently npm:single npm:scheduler"
+    "prod": "node_modules/.bin/concurrently npm:single npm:scheduler npm:subscriber"
   },
   "author": "",
   "license": "ISC",
