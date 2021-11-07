@@ -12,6 +12,7 @@
     "sov:update": "node_modules/.bin/ts-node src/run.ts updateSovereignty",
     "rats:update": "node_modules/.bin/ts-node src/run.ts updateRats",
     "hsspawn:calculate": "node_modules/.bin/ts-node src/run.ts calculateHSSpawn",
+    "systems:update": "node_modules/.bin/ts-node src/run.ts updateSystems",
     "prod": "node_modules/.bin/concurrently npm:single npm:scheduler npm:subscriber"
   },
   "author": "",

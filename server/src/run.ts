@@ -5,6 +5,7 @@ import {createConnection} from './lib/db';
 import {updateRats} from './commands/updateRats';
 import {calculateHSSpawn} from './commands/calculateHSSpawn';
 import {redis} from './lib/redis';
+import {updateSystems} from './commands/updateSystems';
 
 const run = async () => {
   const connection = await createConnection();
@@ -25,6 +26,8 @@ const run = async () => {
     await updateRats(connection);
   } else if (command === "calculateHSSpawn") {
     await calculateHSSpawn(connection);
+  } else if (command === "updateSystems") {
+    await updateSystems(connection);
   } else {
     console.log(`${command} not found`);
   }
