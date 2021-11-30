@@ -35,7 +35,7 @@ export class SpawnResolver {
         .select("spawn.endedAt")
         .leftJoin("spawn.constellation", "constellation")
         .leftJoin("constellation.systems", "system")
-        .where("system.security >= 0.5")
+        .where("ROUND(system.security, 1) >= 0.5")
         .andWhere("system.type = 'Staging'")
         .andWhere("spawn.active = 0")
         .orderBy("spawn.endedAt", "DESC")
