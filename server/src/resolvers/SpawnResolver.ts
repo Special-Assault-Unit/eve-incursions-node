@@ -22,10 +22,12 @@ export class SpawnResolver {
       .createQueryBuilder('spawn')
       .leftJoin("spawn.constellation", "constellation")
       .leftJoin("constellation.systems", "system")
-      .where("system.security >= 0.5")
+      .where("ROUND(system.security, 1) >= 0.5")
       .andWhere("system.type = 'Staging'")
       .andWhere("spawn.active = 1")
       .getCount();
+
+    console.log(hasActiveHSSpawn)
 
     if (hasActiveHSSpawn === 0) {
       const lastSpawn = await getRepository(Spawn)
