@@ -13,7 +13,7 @@
     "rats:update": "ts-node src/run.ts updateRats",
     "hsspawn:calculate": "ts-node src/run.ts calculateHSSpawn",
     "systems:update": "ts-node src/run.ts updateSystems",
-    "prod": "concurrently npm:single npm:scheduler"
+    "prod": "concurrently -k npm:single npm:scheduler"
   },
   "author": "",
   "license": "ISC",

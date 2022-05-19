@@ -26,7 +26,7 @@ const handleSpawnChange = (spawn: Spawn) => {
   })).then();
 };
 
-export const updateSpawns = async ( doInfluenceLogs = false) => {
+export const updateSpawns = async (doInfluenceLogs = false) => {
   const res = await fetch('https://esi.evetech.net/latest/incursions', {
     headers: {
       'User-Agent': 'eve-incursions.de@lars.naurath@gmail.de'
@@ -38,6 +38,8 @@ export const updateSpawns = async ( doInfluenceLogs = false) => {
 
   await AppDataSource.manager.transaction(async manager => {
     const updatedSpawns = [];
+
+    if (!Array.isArray(spawns)) return;
 
     for await (const spawn of spawns) {
       let dbSpawn = await Spawn.findOne({where: {constellationId: spawn.constellation_id, active: true}});
