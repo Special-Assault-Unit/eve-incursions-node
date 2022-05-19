@@ -1,6 +1,6 @@
 import React from 'react';
 import {GraphQLClient} from 'graphql-request';
-import {ActiveCommunitiesQuery, getSdk, RatGroupsQuery} from '../lib/graphql';
+import {getSdk, RatGroupsQuery} from '../lib/graphql';
 import {Rat} from '../components/rats/Rat';
 
 export const getStaticProps = async () => {
@@ -21,9 +21,9 @@ export default function Rats({ratGroups}: RatGroupsQuery) {
         return (
           <div key={name}>
             <h2>{name}</h2>
-            {rats.map(rat => <Rat key={rat.name} rat={rat} />)}
+            {rats.map(rat => <Rat key={rat.name} rat={rat}/>)}
           </div>
-        )
+        );
       })}
     </>
   );

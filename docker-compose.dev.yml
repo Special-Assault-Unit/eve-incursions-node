@@ -21,6 +21,4 @@ services:
       caddy.@cachedFiles.path: "*.jpg *.jpeg *.png *.gif *.ico *.svg"
       caddy.header: '@cachedFiles Cache-Control "public, max-age=604800, must-revalidate"'
 
-  discord:
-    command: sh -c "npm i && npm start"
 

@@ -21,3 +21,6 @@ services:
 
   mysql:
     restart: unless-stopped
+
+  discord:
+    command: sh -c "npm i && npm run prod"
