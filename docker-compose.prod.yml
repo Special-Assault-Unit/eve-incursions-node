@@ -20,9 +20,7 @@ services:
       caddy.header: '@cachedFiles Cache-Control "public, max-age=604800, must-revalidate"'
 
   ws:
-    command: sh -c "npm i && npm start"
-    ports:
-      - 4003:4003
+    command: sh -c "npm i && npm run prod"
     labels:
       caddy: eve-incursions.de
       caddy.reverse_proxy: /ws {{upstreams 4003}}
