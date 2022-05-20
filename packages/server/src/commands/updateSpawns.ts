@@ -162,6 +162,6 @@ export const updateSpawns = async (doInfluenceLogs = false) => {
 
   });
 
-  await handleSpawnChange(changedSpawnIds, doInfluenceLogs)
   if (changed) await redis.del('spawns');
+  await handleSpawnChange(changedSpawnIds, doInfluenceLogs);
 };

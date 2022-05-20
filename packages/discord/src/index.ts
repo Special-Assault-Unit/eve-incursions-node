@@ -157,15 +157,15 @@ const stateMap = {
   },
   'mobilizing': {
     phrase: 'has mobilized',
-    color: 0xDB0DB0
+    color: 0xDB0
   },
   'withdrawing': {
     phrase: 'is withdrawing',
-    color: 0xC6CC6C
+    color: 0xC6C
   },
   'ended': {
     phrase: 'has ended',
-    color: 0xA33A33
+    color: 0xA33
   }
 } as const;
 
