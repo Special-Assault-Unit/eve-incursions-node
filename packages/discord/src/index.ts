@@ -157,15 +157,15 @@ const stateMap = {
   },
   'mobilizing': {
     phrase: 'has mobilized',
-    color: 0xDB0
+    color: 0xDDBB00
   },
   'withdrawing': {
     phrase: 'is withdrawing',
-    color: 0xC6C
+    color: 0xCC66CC
   },
   'ended': {
     phrase: 'has ended',
-    color: 0xA33
+    color: 0xAA3333
   }
 } as const;
 
@@ -195,7 +195,7 @@ const createMessage = async (spawn: SpawnChangeEvent["spawns"][0]) => {
       },
       {
         name: 'Sec. Status',
-        value: `${spawn.securityArea ? '🟩' : spawn.securityArea === 'low' ? '🟧' : '🟥'} ${spawn.security}`,
+        value: `${spawn.securityArea === 'high' ? '🟩' : spawn.securityArea === 'low' ? '🟧' : '🟥'} ${spawn.security}`,
         inline: true
       }
     ],
