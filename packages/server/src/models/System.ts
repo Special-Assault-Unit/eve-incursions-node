@@ -51,6 +51,7 @@ export class System extends BaseEntity {
 
   @Field(() => Number)
   @Column({
+    type: "float",
     transformer: {
       from: value => (value > 0) ? +parseFloat(value).toFixed(1) : +parseFloat(value).toFixed(2),
       to: value => value

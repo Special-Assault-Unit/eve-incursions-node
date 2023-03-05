@@ -36,7 +36,7 @@ export class Spawn extends BaseEntity {
   endedAt: Date;
 
   @Field(() => Number)
-  @Column({})
+  @Column({type: "float"})
   influence: number;
 
   @Column()

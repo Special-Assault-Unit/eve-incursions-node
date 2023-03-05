@@ -12,7 +12,7 @@ export class InfluenceLogEntry extends BaseEntity {
   id: number;
 
   @Field(() => Float)
-  @Column()
+  @Column({type: "float"})
   influence: number;
 
   @Field(() => Date)
