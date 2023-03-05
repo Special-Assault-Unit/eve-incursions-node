@@ -25,7 +25,7 @@ export const getServerSideProps = async () => {
 
 export default function Home({activeSpawns, lastHighSecSpawn: {date}}: ActiveSpawnsQuery) {
   const router = useRouter();
-  const {} = useWebSocket(`wss://${window?.location.host}/ws`, {
+  const {} = useWebSocket(typeof window === "undefined" ? null : `wss://${window?.location.host}/ws`, {
     onMessage: (e) => {
       console.log(e.data)
       router.replace(router.asPath);
