@@ -1,4 +1,3 @@
-import fetch from 'node-fetch';
 import {DamageTypes, Ewar, HP, Rat, RatGroup} from '../models/Rats';
 
 export const updateRats = async () => {

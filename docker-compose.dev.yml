@@ -5,7 +5,7 @@ services:
     working_dir: /eve-incursions
     volumes:
       - ./:/eve-incursions
-    command: npm i --legacy-peer-deps
+    command: npm i
 
   server:
     command: sh -c "npm start"

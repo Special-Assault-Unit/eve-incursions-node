@@ -1,4 +1,3 @@
-import fetch from 'node-fetch';
 import {Spawn} from '../models/Spawn';
 import {System} from '../models/System';
 import {SpawnLog} from '../models/SpawnLog';

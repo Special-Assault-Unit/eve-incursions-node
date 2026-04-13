@@ -1,4 +1,3 @@
-import fetch from 'node-fetch';
 import {System} from '../models/System';
 import {AppDataSource} from '../lib/data-source';
 
