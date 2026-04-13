@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "commonjs",
+    "module": "node16",
     "moduleResolution": "node16",
     "strict": true,
     "esModuleInterop": true,
@@ -9,5 +9,6 @@
     "emitDecoratorMetadata": true,
     "strictPropertyInitialization": false,
     "skipLibCheck": true
-  }
+  },
+  "exclude": ["**/*.test.ts"]
 }

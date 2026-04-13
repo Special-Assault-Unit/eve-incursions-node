@@ -1,10 +1,9 @@
 import {ClassType, Field, Int, ObjectType} from 'type-graphql';
 
-export function PaginatedResponse<TItemsFieldValue>(
-  itemsFieldValue: ClassType<TItemsFieldValue> | String | Number | Boolean,
+export function PaginatedResponse<TItemsFieldValue extends object>(
+  itemsFieldValue: ClassType<TItemsFieldValue>,
 ) {
-  // `isAbstract` decorator option is mandatory to prevent registering in schema
-  @ObjectType({ isAbstract: true })
+  @ObjectType()
   abstract class PaginatedResponseClass {
     @Field(type => [itemsFieldValue])
     items: TItemsFieldValue[];
