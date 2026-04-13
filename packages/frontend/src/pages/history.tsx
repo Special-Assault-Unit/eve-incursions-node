@@ -42,7 +42,7 @@ export default function Home({spawnLogs}: HistoryProps) {
         if (dateString !== previousDate) {
           dateNode = (
             <tr>
-              <th colSpan={7}>{dateString}</th>
+              <th colSpan={7} suppressHydrationWarning>{dateString}</th>
             </tr>
           );
 

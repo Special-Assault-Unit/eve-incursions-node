@@ -1,312 +1,220 @@
-import { GraphQLClient } from 'graphql-request';
-import * as Dom from 'graphql-request/dist/types.dom';
+import { GraphQLClient, RequestOptions } from 'graphql-request';
 import gql from 'graphql-tag';
 export type Maybe<T> = T | null;
+export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
+export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
+type GraphQLClientRequestHeaders = RequestOptions['requestHeaders'];
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: string;
-  String: string;
-  Boolean: boolean;
-  Int: number;
-  Float: number;
-  /** The javascript `Date` as string. Type represents date and time as the ISO Date string. */
-  DateTime: any;
-};
-
-export type Query = {
-  __typename?: 'Query';
-  spawns: Array<Spawn>;
-  activeSpawns: Array<Spawn>;
-  lastHighSecSpawn: LastHsSpawn;
-  activeCommunities: Array<Community>;
-  spawnLogs: PaginatedSpawnLogResponse;
-  ratGroups: Array<RatGroup>;
-};
-
-
-export type QuerySpawnLogsArgs = {
-  page?: Maybe<Scalars['Int']>;
-};
-
-export type Spawn = {
-  __typename?: 'Spawn';
-  id: Scalars['ID'];
-  state: Scalars['String'];
-  active: Scalars['Boolean'];
-  boss: Scalars['Boolean'];
-  establishedAt: Scalars['DateTime'];
-  endedAt?: Maybe<Scalars['DateTime']>;
-  influence: Scalars['Float'];
-  constellation: Constellation;
-  influenceLogs: Array<InfluenceLogEntry>;
-  logs: Array<SpawnLog>;
-  stagingSystem: System;
-  influenceLogArray: Array<Scalars['Float']>;
-  lastStateChangeDate: Scalars['DateTime'];
-};
-
-
-export type Constellation = {
-  __typename?: 'Constellation';
-  id: Scalars['ID'];
-  name: Scalars['String'];
-  spawns: Array<Spawn>;
-  systems: Array<System>;
-  region: Region;
-};
-
-export type System = {
-  __typename?: 'System';
-  id: Scalars['ID'];
-  name: Scalars['String'];
-  constellation: Constellation;
-  stations: Array<Station>;
-  sovereigntyHolderID: Scalars['Float'];
-  sovereigntyHolderName: Scalars['String'];
-  isIsland: Scalars['Boolean'];
-  size: Scalars['Float'];
-  security: Scalars['Float'];
-  type: Scalars['String'];
-  hasRepairStation: Scalars['Boolean'];
-  securityArea: Scalars['String'];
-};
-
-export type Station = {
-  __typename?: 'Station';
-  id: Scalars['ID'];
-  name: Scalars['String'];
-  hasRepairService: Scalars['Boolean'];
-};
-
-export type Region = {
-  __typename?: 'Region';
-  id: Scalars['ID'];
-  name: Scalars['String'];
-};
-
-export type InfluenceLogEntry = {
-  __typename?: 'InfluenceLogEntry';
-  id: Scalars['ID'];
-  influence: Scalars['Float'];
-  date: Scalars['DateTime'];
-  spawn: Array<Spawn>;
-};
-
-export type SpawnLog = {
-  __typename?: 'SpawnLog';
-  id: Scalars['ID'];
-  state: Scalars['String'];
-  date: Scalars['DateTime'];
-  spawn: Spawn;
-};
-
-export type LastHsSpawn = {
-  __typename?: 'LastHsSpawn';
-  date?: Maybe<Scalars['DateTime']>;
+  ID: { input: string; output: string; }
+  String: { input: string; output: string; }
+  Boolean: { input: boolean; output: boolean; }
+  Int: { input: number; output: number; }
+  Float: { input: number; output: number; }
+  DateTimeISO: { input: any; output: any; }
 };
 
 export type Community = {
   __typename?: 'Community';
-  id: Scalars['ID'];
-  name: Scalars['String'];
-  tag: Scalars['String'];
-  channel: Scalars['String'];
-  language: Scalars['String'];
-  tank: Scalars['String'];
-  active: Scalars['Boolean'];
-  timezone: Scalars['String'];
-  hq: Scalars['Boolean'];
-  as: Scalars['Boolean'];
-  vg: Scalars['Boolean'];
+  active: Scalars['Boolean']['output'];
+  as: Scalars['Boolean']['output'];
+  channel: Scalars['String']['output'];
+  hq: Scalars['Boolean']['output'];
+  id: Scalars['ID']['output'];
+  language: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  tag: Scalars['String']['output'];
+  tank: Scalars['String']['output'];
+  timezone: Scalars['String']['output'];
+  vg: Scalars['Boolean']['output'];
 };
 
-export type PaginatedSpawnLogResponse = {
-  __typename?: 'PaginatedSpawnLogResponse';
-  items: Array<SpawnLog>;
-  total: Scalars['Int'];
-  hasMore: Scalars['Boolean'];
-};
-
-export type RatGroup = {
-  __typename?: 'RatGroup';
-  id: Scalars['ID'];
-  name: Scalars['String'];
-  rats: Array<Rat>;
-};
-
-export type Rat = {
-  __typename?: 'Rat';
-  name: Scalars['String'];
-  id: Scalars['Float'];
-  graphicId: Scalars['Float'];
-  groupId: Scalars['Float'];
-  hp: Hp;
-  ehp: Hp;
-  attackTypeId?: Maybe<Scalars['Float']>;
-  attackType?: Maybe<Scalars['String']>;
-  attackMultiplier?: Maybe<Scalars['Float']>;
-  attackDuration?: Maybe<Scalars['Float']>;
-  attackAlpha?: Maybe<Scalars['Float']>;
-  attackTypes: DamageTypes;
-  shieldResistances: DamageTypes;
-  armorResistances: DamageTypes;
-  structureResistances: DamageTypes;
-  attackRange?: Maybe<Scalars['Float']>;
-  orbitRange: Scalars['Float'];
-  orbitSpeed: Scalars['Float'];
-  chaseSpeed: Scalars['Float'];
-  signatureRadius: Scalars['Float'];
-  scanResolution: Scalars['Float'];
-  ewar: Array<Ewar>;
-};
-
-export type Hp = {
-  __typename?: 'HP';
-  total: Scalars['Float'];
-  shield: Scalars['Float'];
-  armor: Scalars['Float'];
-  structure: Scalars['Float'];
+export type Constellation = {
+  __typename?: 'Constellation';
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  region: Region;
+  spawns: Array<Spawn>;
+  systems: Array<System>;
 };
 
 export type DamageTypes = {
   __typename?: 'DamageTypes';
-  kinetic: Scalars['Float'];
-  thermal: Scalars['Float'];
-  em: Scalars['Float'];
-  explosive: Scalars['Float'];
+  em: Scalars['Float']['output'];
+  explosive: Scalars['Float']['output'];
+  kinetic: Scalars['Float']['output'];
+  thermal: Scalars['Float']['output'];
 };
 
 export type Ewar = {
   __typename?: 'Ewar';
-  id: Scalars['Float'];
-  name: Scalars['String'];
+  id: Scalars['Float']['output'];
+  name: Scalars['String']['output'];
   values: Array<EwarValues>;
 };
 
 export type EwarValues = {
   __typename?: 'EwarValues';
-  name: Scalars['String'];
-  value: Scalars['Float'];
-  unit?: Maybe<Scalars['String']>;
+  name: Scalars['String']['output'];
+  unit?: Maybe<Scalars['String']['output']>;
+  value: Scalars['Float']['output'];
+};
+
+export type Hp = {
+  __typename?: 'HP';
+  armor: Scalars['Float']['output'];
+  shield: Scalars['Float']['output'];
+  structure: Scalars['Float']['output'];
+  total: Scalars['Float']['output'];
+};
+
+export type InfluenceLogEntry = {
+  __typename?: 'InfluenceLogEntry';
+  date: Scalars['DateTimeISO']['output'];
+  id: Scalars['ID']['output'];
+  influence: Scalars['Float']['output'];
+  spawn: Spawn;
+};
+
+export type LastHsSpawn = {
+  __typename?: 'LastHsSpawn';
+  date?: Maybe<Scalars['DateTimeISO']['output']>;
+};
+
+export type PaginatedSpawnLogResponse = {
+  __typename?: 'PaginatedSpawnLogResponse';
+  hasMore: Scalars['Boolean']['output'];
+  items: Array<SpawnLog>;
+  total: Scalars['Int']['output'];
+};
+
+export type Query = {
+  __typename?: 'Query';
+  activeCommunities: Array<Community>;
+  activeSpawns: Array<Spawn>;
+  lastHighSecSpawn: LastHsSpawn;
+  ratGroups: Array<RatGroup>;
+  spawnLogs: PaginatedSpawnLogResponse;
+  spawns: Array<Spawn>;
+};
+
+
+export type QuerySpawnLogsArgs = {
+  page?: Scalars['Int']['input'];
+};
+
+export type Rat = {
+  __typename?: 'Rat';
+  armorResistances: DamageTypes;
+  attackAlpha?: Maybe<Scalars['Float']['output']>;
+  attackDuration?: Maybe<Scalars['Float']['output']>;
+  attackMultiplier?: Maybe<Scalars['Float']['output']>;
+  attackRange?: Maybe<Scalars['Float']['output']>;
+  attackType?: Maybe<Scalars['String']['output']>;
+  attackTypeId?: Maybe<Scalars['Float']['output']>;
+  attackTypes: DamageTypes;
+  chaseSpeed: Scalars['Float']['output'];
+  ehp: Hp;
+  ewar: Array<Ewar>;
+  graphicId: Scalars['Float']['output'];
+  groupId: Scalars['Float']['output'];
+  hp: Hp;
+  id: Scalars['Float']['output'];
+  name: Scalars['String']['output'];
+  orbitRange: Scalars['Float']['output'];
+  orbitSpeed: Scalars['Float']['output'];
+  scanResolution: Scalars['Float']['output'];
+  shieldResistances: DamageTypes;
+  signatureRadius: Scalars['Float']['output'];
+  structureResistances: DamageTypes;
+};
+
+export type RatGroup = {
+  __typename?: 'RatGroup';
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  rats: Array<Rat>;
+};
+
+export type Region = {
+  __typename?: 'Region';
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+};
+
+export type Spawn = {
+  __typename?: 'Spawn';
+  active: Scalars['Boolean']['output'];
+  boss: Scalars['Boolean']['output'];
+  constellation: Constellation;
+  endedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  establishedAt: Scalars['DateTimeISO']['output'];
+  id: Scalars['ID']['output'];
+  influence: Scalars['Float']['output'];
+  influenceLogArray: Array<Scalars['Float']['output']>;
+  influenceLogs: Array<InfluenceLogEntry>;
+  lastStateChangeDate: Scalars['DateTimeISO']['output'];
+  logs: Array<SpawnLog>;
+  stagingSystem: System;
+  state: Scalars['String']['output'];
+};
+
+export type SpawnLog = {
+  __typename?: 'SpawnLog';
+  date: Scalars['DateTimeISO']['output'];
+  id: Scalars['ID']['output'];
+  spawn: Spawn;
+  state: Scalars['String']['output'];
+};
+
+export type Station = {
+  __typename?: 'Station';
+  hasRepairService: Scalars['Boolean']['output'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+};
+
+export type System = {
+  __typename?: 'System';
+  constellation: Constellation;
+  hasRepairStation: Scalars['Boolean']['output'];
+  id: Scalars['ID']['output'];
+  isIsland: Scalars['Boolean']['output'];
+  name: Scalars['String']['output'];
+  security: Scalars['Float']['output'];
+  securityArea: Scalars['String']['output'];
+  size: Scalars['Float']['output'];
+  sovereigntyHolderID: Scalars['Float']['output'];
+  sovereigntyHolderName: Scalars['String']['output'];
+  stations: Array<Station>;
+  type: Scalars['String']['output'];
 };
 
 export type ActiveCommunitiesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ActiveCommunitiesQuery = (
-  { __typename?: 'Query' }
-  & { activeCommunities: Array<(
-    { __typename?: 'Community' }
-    & Pick<Community, 'name' | 'tag' | 'channel' | 'language' | 'tank' | 'timezone' | 'hq' | 'as' | 'vg'>
-  )> }
-);
+export type ActiveCommunitiesQuery = { __typename?: 'Query', activeCommunities: Array<{ __typename?: 'Community', name: string, tag: string, channel: string, language: string, tank: string, timezone: string, hq: boolean, as: boolean, vg: boolean }> };
 
 export type SpawnLogsQueryVariables = Exact<{
-  page?: Maybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
 }>;
 
 
-export type SpawnLogsQuery = (
-  { __typename?: 'Query' }
-  & { spawnLogs: (
-    { __typename?: 'PaginatedSpawnLogResponse' }
-    & Pick<PaginatedSpawnLogResponse, 'total'>
-    & { items: Array<(
-      { __typename?: 'SpawnLog' }
-      & Pick<SpawnLog, 'state' | 'date'>
-      & { spawn: (
-        { __typename?: 'Spawn' }
-        & { constellation: (
-          { __typename?: 'Constellation' }
-          & Pick<Constellation, 'name'>
-          & { region: (
-            { __typename?: 'Region' }
-            & Pick<Region, 'name'>
-          ) }
-        ), stagingSystem: (
-          { __typename?: 'System' }
-          & Pick<System, 'name' | 'sovereigntyHolderID' | 'sovereigntyHolderName'>
-        ) }
-      ) }
-    )> }
-  ) }
-);
+export type SpawnLogsQuery = { __typename?: 'Query', spawnLogs: { __typename?: 'PaginatedSpawnLogResponse', total: number, items: Array<{ __typename?: 'SpawnLog', state: string, date: any, spawn: { __typename?: 'Spawn', constellation: { __typename?: 'Constellation', name: string, region: { __typename?: 'Region', name: string } }, stagingSystem: { __typename?: 'System', name: string, sovereigntyHolderID: number, sovereigntyHolderName: string } } }> } };
 
 export type ActiveSpawnsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ActiveSpawnsQuery = (
-  { __typename?: 'Query' }
-  & { activeSpawns: Array<(
-    { __typename?: 'Spawn' }
-    & Pick<Spawn, 'state' | 'id' | 'influence' | 'boss' | 'establishedAt' | 'endedAt' | 'influenceLogArray' | 'lastStateChangeDate'>
-    & { stagingSystem: (
-      { __typename?: 'System' }
-      & Pick<System, 'sovereigntyHolderID' | 'sovereigntyHolderName' | 'name' | 'security' | 'securityArea'>
-    ), constellation: (
-      { __typename?: 'Constellation' }
-      & Pick<Constellation, 'name'>
-      & { region: (
-        { __typename?: 'Region' }
-        & Pick<Region, 'name'>
-      ), systems: Array<(
-        { __typename?: 'System' }
-        & Pick<System, 'name' | 'size' | 'security' | 'type' | 'securityArea'>
-        & { stations: Array<(
-          { __typename?: 'Station' }
-          & Pick<Station, 'hasRepairService' | 'name'>
-        )> }
-      )> }
-    ) }
-  )>, lastHighSecSpawn: (
-    { __typename?: 'LastHsSpawn' }
-    & Pick<LastHsSpawn, 'date'>
-  ) }
-);
+export type ActiveSpawnsQuery = { __typename?: 'Query', activeSpawns: Array<{ __typename?: 'Spawn', state: string, id: string, influence: number, boss: boolean, establishedAt: any, endedAt?: any | null, influenceLogArray: Array<number>, lastStateChangeDate: any, stagingSystem: { __typename?: 'System', sovereigntyHolderID: number, sovereigntyHolderName: string, name: string, security: number, securityArea: string }, constellation: { __typename?: 'Constellation', name: string, region: { __typename?: 'Region', name: string }, systems: Array<{ __typename?: 'System', name: string, size: number, security: number, type: string, securityArea: string, stations: Array<{ __typename?: 'Station', hasRepairService: boolean, name: string }> }> } }>, lastHighSecSpawn: { __typename?: 'LastHsSpawn', date?: any | null } };
 
 export type RatGroupsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type RatGroupsQuery = (
-  { __typename?: 'Query' }
-  & { ratGroups: Array<(
-    { __typename?: 'RatGroup' }
-    & Pick<RatGroup, 'id' | 'name'>
-    & { rats: Array<(
-      { __typename?: 'Rat' }
-      & Pick<Rat, 'name' | 'graphicId' | 'attackType' | 'attackAlpha' | 'attackMultiplier' | 'attackDuration' | 'attackTypeId' | 'attackRange' | 'orbitRange' | 'orbitSpeed' | 'chaseSpeed' | 'signatureRadius' | 'scanResolution'>
-      & { hp: (
-        { __typename?: 'HP' }
-        & Pick<Hp, 'total' | 'shield' | 'structure' | 'armor'>
-      ), ehp: (
-        { __typename?: 'HP' }
-        & Pick<Hp, 'total' | 'shield' | 'structure' | 'armor'>
-      ), attackTypes: (
-        { __typename?: 'DamageTypes' }
-        & Pick<DamageTypes, 'kinetic' | 'thermal' | 'em' | 'explosive'>
-      ), shieldResistances: (
-        { __typename?: 'DamageTypes' }
-        & Pick<DamageTypes, 'kinetic' | 'thermal' | 'em' | 'explosive'>
-      ), armorResistances: (
-        { __typename?: 'DamageTypes' }
-        & Pick<DamageTypes, 'kinetic' | 'thermal' | 'em' | 'explosive'>
-      ), structureResistances: (
-        { __typename?: 'DamageTypes' }
-        & Pick<DamageTypes, 'kinetic' | 'thermal' | 'em' | 'explosive'>
-      ), ewar: Array<(
-        { __typename?: 'Ewar' }
-        & Pick<Ewar, 'id' | 'name'>
-        & { values: Array<(
-          { __typename?: 'EwarValues' }
-          & Pick<EwarValues, 'name' | 'value' | 'unit'>
-        )> }
-      )> }
-    )> }
-  )> }
-);
+export type RatGroupsQuery = { __typename?: 'Query', ratGroups: Array<{ __typename?: 'RatGroup', id: string, name: string, rats: Array<{ __typename?: 'Rat', name: string, graphicId: number, attackType?: string | null, attackAlpha?: number | null, attackMultiplier?: number | null, attackDuration?: number | null, attackTypeId?: number | null, attackRange?: number | null, orbitRange: number, orbitSpeed: number, chaseSpeed: number, signatureRadius: number, scanResolution: number, hp: { __typename?: 'HP', total: number, shield: number, structure: number, armor: number }, ehp: { __typename?: 'HP', total: number, shield: number, structure: number, armor: number }, attackTypes: { __typename?: 'DamageTypes', kinetic: number, thermal: number, em: number, explosive: number }, shieldResistances: { __typename?: 'DamageTypes', kinetic: number, thermal: number, em: number, explosive: number }, armorResistances: { __typename?: 'DamageTypes', kinetic: number, thermal: number, em: number, explosive: number }, structureResistances: { __typename?: 'DamageTypes', kinetic: number, thermal: number, em: number, explosive: number }, ewar: Array<{ __typename?: 'Ewar', id: number, name: string, values: Array<{ __typename?: 'EwarValues', name: string, value: number, unit?: string | null }> }> }> }> };
 
 
 export const ActiveCommunitiesDocument = gql`
@@ -459,23 +367,24 @@ export const RatGroupsDocument = gql`
 }
     `;
 
-export type SdkFunctionWrapper = <T>(action: () => Promise<T>) => Promise<T>;
+export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string, variables?: any) => Promise<T>;
 
 
-const defaultWrapper: SdkFunctionWrapper = sdkFunction => sdkFunction();
+const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationType, _variables) => action();
+
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
-    activeCommunities(variables?: ActiveCommunitiesQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<ActiveCommunitiesQuery> {
-      return withWrapper(() => client.request<ActiveCommunitiesQuery>(ActiveCommunitiesDocument, variables, requestHeaders));
+    activeCommunities(variables?: ActiveCommunitiesQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<ActiveCommunitiesQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<ActiveCommunitiesQuery>({ document: ActiveCommunitiesDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'activeCommunities', 'query', variables);
     },
-    spawnLogs(variables?: SpawnLogsQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<SpawnLogsQuery> {
-      return withWrapper(() => client.request<SpawnLogsQuery>(SpawnLogsDocument, variables, requestHeaders));
+    spawnLogs(variables?: SpawnLogsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<SpawnLogsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<SpawnLogsQuery>({ document: SpawnLogsDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'spawnLogs', 'query', variables);
     },
-    activeSpawns(variables?: ActiveSpawnsQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<ActiveSpawnsQuery> {
-      return withWrapper(() => client.request<ActiveSpawnsQuery>(ActiveSpawnsDocument, variables, requestHeaders));
+    activeSpawns(variables?: ActiveSpawnsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<ActiveSpawnsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<ActiveSpawnsQuery>({ document: ActiveSpawnsDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'activeSpawns', 'query', variables);
     },
-    ratGroups(variables?: RatGroupsQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<RatGroupsQuery> {
-      return withWrapper(() => client.request<RatGroupsQuery>(RatGroupsDocument, variables, requestHeaders));
+    ratGroups(variables?: RatGroupsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<RatGroupsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<RatGroupsQuery>({ document: RatGroupsDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'ratGroups', 'query', variables);
     }
   };
 }
