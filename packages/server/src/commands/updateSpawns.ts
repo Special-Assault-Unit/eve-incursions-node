@@ -6,6 +6,8 @@ import {InfluenceLogEntry} from '../models/InfluenceLogEntry';
 import {In, Not} from 'typeorm';
 import {redis} from '../lib/redis';
 import {AppDataSource} from '../lib/data-source';
+import {ensureConstellationData} from './ensureConstellationData';
+import {esiRequest} from '../lib/esi';
 
 interface APISpawns {
   constellation_id: number;
@@ -69,20 +71,17 @@ const handleSpawnChange = async (spawnIds: number[], influenceLogs: boolean) => 
 };
 
 export const updateSpawns = async (doInfluenceLogs = false) => {
-  const res = await fetch('https://esi.evetech.net/latest/incursions', {
-    headers: {
-      'User-Agent': 'eve-incursions.de@lars.naurath@gmail.de'
-    }
-  });
-  const spawns: APISpawns[] = await res.json();
+  const spawns = await esiRequest<APISpawns[]>('/incursions/');
   const changedSpawnIds: number[] = [];
 
   let changed = false;
 
+  if (!Array.isArray(spawns)) return;
+
+  await ensureConstellationData(spawns.map(s => s.constellation_id));
+
   await AppDataSource.manager.transaction(async manager => {
     const updatedSpawns = [];
-
-    if (!Array.isArray(spawns)) return;
 
     for await (const spawn of spawns) {
       let dbSpawn = await Spawn.findOne({where: {constellationId: spawn.constellation_id, active: true}});

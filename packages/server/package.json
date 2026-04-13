@@ -12,6 +12,7 @@
     "rats:update": "ts-node --swc src/run.ts updateRats",
     "hsspawn:calculate": "ts-node --swc src/run.ts calculateHSSpawn",
     "systems:update": "ts-node --swc src/run.ts updateSystems",
+    "test": "vitest run",
     "prod": "concurrently -k npm:single npm:scheduler"
   },
   "author": "",
@@ -31,6 +32,7 @@
   },
   "devDependencies": {
     "@types/node-schedule": "^2.1.0",
+    "vitest": "^3.2.0",
     "@swc/core": "^1.7.0",
     "@swc/helpers": "^0.5.0",
     "nodemon": "^3.1.0",

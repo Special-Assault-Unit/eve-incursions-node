@@ -1,4 +1,4 @@
-import {BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
+import {BaseEntity, Column, Entity, OneToMany, PrimaryColumn} from 'typeorm';
 import {Field, ID, ObjectType} from 'type-graphql';
 import {Constellation} from './Constellation';
 
@@ -8,8 +8,8 @@ import {Constellation} from './Constellation';
 @ObjectType()
 export class Region extends BaseEntity {
   @Field(() => ID)
-  @PrimaryGeneratedColumn({name: 'regionID'})
-  id: string;
+  @PrimaryColumn({name: 'regionID'})
+  id: number;
 
   @Field(() => String)
   @Column({name: 'regionName'})

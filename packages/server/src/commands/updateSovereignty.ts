@@ -1,5 +1,6 @@
 import {System} from '../models/System';
 import {AppDataSource} from '../lib/data-source';
+import {esiRequest} from '../lib/esi';
 
 interface APISovereignty {
   system_id: number;
@@ -15,13 +16,7 @@ interface APINames {
 }
 
 export const updateSovereignty = async () => {
-
-  const res = await fetch('https://esi.evetech.net/latest/sovereignty/map', {
-    headers: {
-      'User-Agent': 'eve-incursions.de@lars.naurath@gmail.de'
-    }
-  });
-  const sovSystems: APISovereignty[] = await res.json();
+  const sovSystems = await esiRequest<APISovereignty[]>('/sovereignty/map/');
   const queryAlliances: number[] = [];
 
   await AppDataSource.manager.transaction(async manager => {
@@ -44,17 +39,18 @@ export const updateSovereignty = async () => {
     }
 
     for (let i = 0; i <= queryAlliances.length; i += 1000) {
-      const nameRes = await fetch('https://esi.evetech.net/latest/universe/names', {
-        headers: {
-          'User-Agent': 'eve-incursions.de@lars.naurath@gmail.de',
-        },
+      const slice = queryAlliances.slice(i, i + 1000);
+      if (slice.length === 0) continue;
+
+      const nameRes = await fetch('https://esi.evetech.net/latest/universe/names/', {
+        headers: { 'User-Agent': 'eve-incursions.de@lars.naurath@gmail.de' },
         method: 'post',
-        body: JSON.stringify(queryAlliances.slice(i, i + 1000))
+        body: JSON.stringify(slice)
       });
 
-      const names: APINames[] = await nameRes.json();
+      const nameData: APINames[] = await nameRes.json();
 
-      for await (const {name, id} of names) {
+      for await (const {name, id} of nameData) {
         await manager.createQueryBuilder().update(System).set({sovereigntyHolderName: name}).where({sovereigntyHolderID: id}).execute();
       }
     }

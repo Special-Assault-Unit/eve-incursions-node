@@ -1,4 +1,4 @@
-import {BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
+import {BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryColumn} from 'typeorm';
 import {Field, ID, ObjectType} from 'type-graphql';
 import {Constellation} from './Constellation';
 import {Station} from './Station';
@@ -9,7 +9,7 @@ import {Station} from './Station';
 @ObjectType()
 export class System extends BaseEntity {
   @Field(() => ID)
-  @PrimaryGeneratedColumn({name: 'solarSystemID'})
+  @PrimaryColumn({name: 'solarSystemID'})
   id: number;
 
   @Field(() => String)
