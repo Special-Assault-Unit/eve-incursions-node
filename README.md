@@ -77,19 +77,16 @@ Then open:
 
 ### Seed the data
 
-A fresh MariaDB starts empty, so the homepage will have nothing to show until the server
-fetches data from ESI. Run the updater commands in the `server` container:
+A fresh MariaDB starts empty, so the homepage will have nothing to show until it is
+populated. `seed/eve-incursions-seed.sql.gz` is a gzipped MariaDB dump of all 11 tables
+(systems, spawns, communities, rat stats, etc.), taken on 2026-06-26. It contains only
+public EVE/game data — no user data. Pipe it into the running `mysql` container:
 
 ```bash
-DC="docker compose -f docker-compose.yml -f docker-compose.dev.yml"
-
-$DC exec server npm run systems:update   # static system/constellation data
-$DC exec server npm run spawns:update     # current incursion spawns
-$DC exec server npm run sov:update        # sovereignty holders
-$DC exec server npm run rats:update       # Sansha rat stats
+gunzip -c seed/eve-incursions-seed.sql.gz | \
+  docker compose -f docker-compose.yml -f docker-compose.dev.yml exec -T mysql \
+  mariadb -uroot -p"$MYSQL_PASSWORD" eve-incursions
 ```
-
-In production these run on a schedule (`npm run scheduler` / `npm run prod` in the server).
 
 ## Useful commands
 
