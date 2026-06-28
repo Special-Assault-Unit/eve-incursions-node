@@ -8,6 +8,7 @@ import {redis} from '../lib/redis';
 import {AppDataSource} from '../lib/data-source';
 import {ensureConstellationData} from './ensureConstellationData';
 import {esiRequest} from '../lib/esi';
+import {notifySpawnTransitions} from '../notifications/discord';
 
 interface APISpawns {
   constellation_id: number;
@@ -73,6 +74,8 @@ const handleSpawnChange = async (spawnIds: number[], influenceLogs: boolean) => 
 export const updateSpawns = async (doInfluenceLogs = false) => {
   const spawns = await esiRequest<APISpawns[]>('/incursions/');
   const changedSpawnIds: number[] = [];
+  const newSpawnIds: number[] = [];
+  const endedSpawnIds: number[] = [];
 
   let changed = false;
 
@@ -85,9 +88,11 @@ export const updateSpawns = async (doInfluenceLogs = false) => {
 
     for await (const spawn of spawns) {
       let dbSpawn = await Spawn.findOne({where: {constellationId: spawn.constellation_id, active: true}});
+      let isNew = false;
 
       if (!dbSpawn) {
         dbSpawn = new Spawn();
+        isNew = true;
         dbSpawn.constellationId = spawn.constellation_id;
         dbSpawn.active = true;
         dbSpawn.type = 0;
@@ -119,6 +124,7 @@ export const updateSpawns = async (doInfluenceLogs = false) => {
       await manager.save(dbSpawn);
 
       updatedSpawns.push(dbSpawn.id);
+      if (isNew) newSpawnIds.push(dbSpawn.id);
 
       if (oldState.toLocaleLowerCase() !== spawn.state.toLocaleLowerCase()) {
         const spawnLog = new SpawnLog();
@@ -150,6 +156,7 @@ export const updateSpawns = async (doInfluenceLogs = false) => {
       await manager.save(endedSpawn);
 
       changedSpawnIds.push(endedSpawn.id);
+      endedSpawnIds.push(endedSpawn.id);
 
       const endedSpawnLog = new SpawnLog();
       endedSpawnLog.state = 'Ended';
@@ -161,5 +168,7 @@ export const updateSpawns = async (doInfluenceLogs = false) => {
   });
 
   if (changed) await redis.del('spawns');
+  if (newSpawnIds.length > 0) await notifySpawnTransitions(newSpawnIds, 'start').catch(error => console.error('[notify] batch failed', error));
+  if (endedSpawnIds.length > 0) await notifySpawnTransitions(endedSpawnIds, 'end').catch(error => console.error('[notify] batch failed', error));
   await handleSpawnChange(changedSpawnIds, doInfluenceLogs);
 };
