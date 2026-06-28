@@ -36,3 +36,27 @@ jobs:
 
       - name: Run tests
         run: npm test
+
+  deploy:
+    name: Deploy to OINK
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+
+    steps:
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s\n' "${{ secrets.OINK_DEPLOY_KEY }}" > ~/.ssh/oink_deploy
+          chmod 600 ~/.ssh/oink_deploy
+          printf '%s\n' "${{ secrets.OINK_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Deploy to OINK
+        run: |
+          ssh -i ~/.ssh/oink_deploy \
+            -o BatchMode=yes \
+            -o StrictHostKeyChecking=yes \
+            "${{ secrets.OINK_DEPLOY_USER }}@${{ secrets.OINK_DEPLOY_HOST }}" \
+            /usr/local/bin/deploy-eve-incursions
