@@ -9,6 +9,7 @@ describe('loadNotificationConfig', () => {
     process.env = {...originalEnv};
     delete process.env.DISCORD_WEBHOOK_URL;
     delete process.env.NOTIFICATION_FILTERS;
+    delete process.env.APP_BASE_URL;
   });
 
   afterEach(() => {
@@ -25,7 +26,23 @@ describe('loadNotificationConfig', () => {
     expect(config).toEqual({
       enabled: true,
       webhookUrl: 'https://discord.com/api/webhooks/test',
+      appBaseUrl: undefined,
       filters: [{regionNames: ['Innsmother', 'Delve']}],
+    });
+  });
+
+  it('captures APP_BASE_URL when configured', () => {
+    process.env.DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/test';
+    process.env.NOTIFICATION_FILTERS = '[{"regionNames":["Insmother"]}]';
+    process.env.APP_BASE_URL = 'https://incursion.xsaux.com';
+
+    const config = loadNotificationConfig();
+
+    expect(config).toEqual({
+      enabled: true,
+      webhookUrl: 'https://discord.com/api/webhooks/test',
+      appBaseUrl: 'https://incursion.xsaux.com',
+      filters: [{regionNames: ['Insmother']}],
     });
   });
 

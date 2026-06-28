@@ -7,6 +7,7 @@ export type NotificationConfig = {
 } | {
   readonly enabled: true;
   readonly webhookUrl: string;
+  readonly appBaseUrl: string | undefined;
   readonly filters: readonly NotificationFilter[];
 }
 
@@ -20,6 +21,8 @@ export const loadNotificationConfig = (): NotificationConfig => {
     console.warn('Discord notifications disabled: DISCORD_WEBHOOK_URL is not configured');
     return {enabled: false};
   }
+
+  const appBaseUrl = process.env.APP_BASE_URL?.trim() || undefined;
 
   const rawFilters = process.env.NOTIFICATION_FILTERS;
   if (!rawFilters) {
@@ -43,7 +46,7 @@ export const loadNotificationConfig = (): NotificationConfig => {
       return {enabled: false};
     }
 
-    return {enabled: true, webhookUrl, filters};
+    return {enabled: true, webhookUrl, appBaseUrl, filters};
   } catch (error) {
     console.warn('Discord notifications disabled: NOTIFICATION_FILTERS is invalid JSON');
     return {enabled: false};

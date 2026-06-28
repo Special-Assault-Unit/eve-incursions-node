@@ -28,6 +28,7 @@ services:
       - MYSQL_DB
       - DISCORD_WEBHOOK_URL
       - NOTIFICATION_FILTERS
+      - APP_BASE_URL
     labels:
       caddy: ${PUBLIC_HOST:-localhost}
       caddy.reverse_proxy: /api* {{upstreams 4001}}

@@ -17,7 +17,7 @@ export const Spawn = ({spawn}: { spawn: ActiveSpawnsQuery['activeSpawns'][0] }) 
   const influencePct = Math.round(spawn.influence * 100);
 
   return (
-    <article className={styles.card}>
+    <article id={`spawn-${spawn.id}`} className={styles.card}>
       <header className={styles.header}>
         <img
           className={styles.sov}

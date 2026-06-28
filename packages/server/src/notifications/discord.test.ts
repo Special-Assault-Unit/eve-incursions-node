@@ -31,23 +31,29 @@ describe('Discord notifications', () => {
     mockLoadConfig.mockReturnValue({
       enabled: true,
       webhookUrl: 'https://discord.com/api/webhooks/test',
-      filters: [{regionNames: ['Innsmother']}],
+      appBaseUrl: 'https://incursion.xsaux.com',
+      filters: [{regionNames: ['Insmother']}],
     });
     mockMatchesRegion.mockReturnValue(true);
-    mockFindOne.mockResolvedValue(spawnWithRegion('Innsmother'));
+    mockFindOne.mockResolvedValue(spawnWithRegion('Insmother'));
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  it('posts a Discord message and marks a matching start notification', async () => {
+  it('posts a Discord embed and marks a matching start notification', async () => {
     await notifySpawnTransitions([42], 'start');
 
     expect(mockFetch).toHaveBeenCalledWith(
       'https://discord.com/api/webhooks/test',
       expect.objectContaining({method: 'POST'})
     );
+
+    const body = JSON.parse(mockFetch.mock.calls[0][1].body);
+    expect(body).toHaveProperty('embeds');
+    expect(Array.isArray(body.embeds)).toBe(true);
+    expect(body.embeds[0].url).toBe('https://incursion.xsaux.com/#spawn-42');
     expect(mockRedis.set).toHaveBeenCalledWith('notify:start:42', '1', 'EX', 2_592_000);
   });
 
@@ -88,8 +94,15 @@ describe('Discord notifications', () => {
 const spawnWithRegion = (regionName: string) => ({
   id: 42,
   state: 'Established',
+  boss: false,
+  influence: 0,
+  establishedAt: new Date('2026-05-01T20:15:01.000Z'),
   stagingSystem: Promise.resolve({
     name: 'Test Staging',
+    security: -0.1,
+    securityArea: 'null',
+    sovereigntyHolderID: 99000001,
+    sovereigntyHolderName: 'Test Sov',
     constellation: Promise.resolve({
       name: 'Test Constellation',
       region: Promise.resolve({name: regionName}),
