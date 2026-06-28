@@ -16,8 +16,8 @@ eve-incursions-node/
 |-- packages/frontend/    # Next.js SSR site, GraphQL codegen, UI
 |-- packages/ws/          # Redis spawn.change -> websocket fanout
 |-- seed/                 # MariaDB seed dump, not app code
-|-- caddy/                # caddy-docker-proxy stack
-`-- docker-compose*.yml   # base/dev/stage/prod service wiring
+|-- docker-compose.yml    # production-like runtime, optional Caddy profile
+`-- docker-compose.dev.yml # local development overlay
 ```
 
 ## WHERE TO LOOK
@@ -32,7 +32,7 @@ eve-incursions-node/
 | Realtime bridge | `packages/ws/src/index.ts` | Redis channel `spawn.change`, websocket payload `"spawn.change"` |
 | Frontend routes | `packages/frontend/src/pages/` | Next pages router; SSR pages call GraphQL/Redis |
 | Generated frontend API | `packages/frontend/src/lib/graphql.ts` | Generated from `src/**/*.graphql`; do not hand-edit |
-| Compose runtime | `docker-compose.yml`, `docker-compose.dev.yml`, `docker-compose.prod.yml`, `docker-compose.stage.yml` | Docker-first local/prod model |
+| Compose runtime | `docker-compose.yml`, `docker-compose.dev.yml` | Production-like runtime plus local dev overlay |
 | Seed DB | `seed/eve-incursions-seed.sql.gz` | Public game-data MariaDB snapshot |
 
 ## CODE MAP
@@ -53,6 +53,8 @@ LSP symbol query unavailable in this harness; reference counts below are cheap t
 - Root `npm test` runs available workspace tests; use `npm run typecheck` for TypeScript checks.
 - npm workspaces only declare `./packages/*`; no shared TS package.
 - Docker Compose is canonical runtime. Services use container hostnames: `server`, `redis`, `mysql`.
+- Caddy is optional via Compose profile: `COMPOSE_PROFILES=caddy` or `docker compose --profile caddy up`.
+- Published app ports bind to `127.0.0.1` by default for host-level reverse proxies; override `*_BIND` only intentionally.
 - Server TS: Node16 modules, decorators on, strict mode, `strictPropertyInitialization: false`, tests excluded from `tsconfig`.
 - Frontend TS: Next/bundler resolution, `allowJs`, `isolatedModules`, `noEmit`, React JSX transform.
 - No ESLint/Prettier config found. Preserve local formatting.
@@ -63,7 +65,8 @@ LSP symbol query unavailable in this harness; reference counts below are cheap t
 - Do not require frontend `next build` or GraphQL codegen in the fast baseline unless live app infrastructure is available.
 - Do not edit `packages/frontend/src/lib/graphql.ts` by hand. Edit `.graphql` documents/schema flow, then run frontend codegen.
 - Do not treat `packages/server/src/commands/updateSystems.ts` as an active path without checking its deprecation warning.
-- Do not assume `http://localhost` works unless `caddy/` proxy stack is running; direct frontend is `http://localhost:4002`.
+- Do not hard-code deployment domains in Compose files; use `PUBLIC_HOST` for the optional Caddy profile.
+- Do not assume `http://localhost` works unless the `caddy` profile is enabled; direct frontend is `http://localhost:4002` in dev.
 
 ## UNIQUE STYLES
 
@@ -75,9 +78,8 @@ LSP symbol query unavailable in this harness; reference counts below are cheap t
 ## COMMANDS
 
 ```bash
-docker network create caddy
 docker compose -f docker-compose.yml -f docker-compose.dev.yml up
-cd caddy && docker compose up -d
+COMPOSE_PROFILES=caddy docker compose -f docker-compose.yml -f docker-compose.dev.yml up
 
 npm run typecheck
 npm test
@@ -134,8 +136,8 @@ Keep issues concise. Prefer one issue per work theme, not one issue per commit.
 
 ## NOTES
 
-- Ports: server `4001`, frontend host `4002` -> container `3000`, websocket `4003`, MariaDB host `3313`.
-- Root `.env` must provide `MYSQL_HOST`, `MYSQL_USER`, `MYSQL_PASSWORD`, `MYSQL_DB`; prod backup can use `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`.
+- Ports: server `4001`, frontend host `4002` -> container `3000`, websocket `4003`, MariaDB host `3313`; default bind host is `127.0.0.1`.
+- Root `.env` must provide `MYSQL_HOST`, `MYSQL_USER`, `MYSQL_PASSWORD`, `MYSQL_DB`; optional Caddy uses `PUBLIC_HOST`.
 - `packages/ws` is intentionally tiny; root guidance covers it unless protocol grows.
 - Tests are sparse and server-only: `packages/server/src/lib/esi.test.ts`, `packages/server/src/commands/ensureConstellationData.test.ts`.
 

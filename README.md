@@ -20,9 +20,10 @@ A npm-workspaces monorepo with three services, wired together with Docker Compos
 | `packages/ws`     | WebSocket server (push live updates)    | `4003`      |
 | `packages/frontend` | Next.js site (SSR)                    | `4002`      |
 
-Backing services: **MariaDB** (`3313` on host) and **Redis** (internal). In production a
-[caddy-docker-proxy](https://github.com/lucaslorentz/caddy-docker-proxy) container routes
-everything under one host; locally you can hit the services directly or run caddy too.
+Backing services: **MariaDB** (`3313` on host) and **Redis** (internal). The stack can run
+behind any external reverse proxy. An optional
+[caddy-docker-proxy](https://github.com/lucaslorentz/caddy-docker-proxy) service is
+available through the `caddy` Compose profile.
 
 ## Prerequisites
 
@@ -39,41 +40,40 @@ MYSQL_USER=root
 MYSQL_PASSWORD=your-db-password
 MYSQL_DB=eve-incursions
 
-# GCS HMAC credentials for the database-backup container (production only).
-# Used by the `mysql_backup` service via Google's S3-compatible API. Omit for local dev.
-AWS_ACCESS_KEY_ID=
-AWS_SECRET_ACCESS_KEY=
+# Optional: hostname used by the bundled Caddy profile.
+# Leave as localhost for local development, or set during deployment.
+PUBLIC_HOST=localhost
 ```
 
-`MYSQL_HOST` is the compose service name (`mysql`) when running in Docker. The `AWS_*`
-keys are the HMAC credentials the `mysql_backup` service (see `docker-compose.prod.yml`)
-uses to push dumps to a Google Cloud Storage bucket through its S3-compatible endpoint —
-they are not needed for local development.
+`MYSQL_HOST` is the compose service name (`mysql`) when running in Docker.
+The app ports bind to `127.0.0.1` by default so a host-level reverse proxy can sit in
+front of them. Override `SERVER_BIND`, `FRONTEND_BIND`, `WS_BIND`, or `MYSQL_BIND` only
+when you intentionally want wider exposure.
 
 ## Run it locally
 
-The base `docker-compose.yml` is the production definition; the dev overlay
-`docker-compose.dev.yml` adds the start commands, an `init` step that runs `npm install`,
-and published ports.
+The base `docker-compose.yml` is the production-like runtime. The development overlay
+`docker-compose.dev.yml` switches services to watch/dev commands and publishes local
+ports.
 
 ```bash
-# 1. one-time: create the external network the compose files expect
-docker network create caddy
-
-# 2. (optional) start the caddy reverse proxy → serves everything on http://localhost
-cd caddy && docker compose up -d && cd ..
-
-# 3. bring up the dev stack (installs deps, then starts all services)
+# Bring up the dev stack (installs deps, then starts all services)
 docker compose -f docker-compose.yml -f docker-compose.dev.yml up
 ```
 
 Then open:
 
 - **http://localhost:4002** — the frontend directly, or
-- **http://localhost** — via caddy (only if you did step 2)
+- **http://localhost** — via Caddy if you enable the `caddy` profile
 
-> Note: hit port **4002** for the frontend. `http://localhost` only works when the caddy
-> proxy from step 2 is running.
+> Note: hit port **4002** for the frontend. `http://localhost` only works through the
+> bundled proxy when the `caddy` profile is enabled.
+
+To run the bundled reverse proxy too:
+
+```bash
+COMPOSE_PROFILES=caddy docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+```
 
 ### Seed the data
 
@@ -114,8 +114,18 @@ Server scripts (run inside the `server` container, or from `packages/server`):
 
 ## Production
 
-`docker-compose.yml` + `docker-compose.prod.yml` (and `docker-compose.stage.yml` for
-staging) define the deployed stack, routed by the external caddy proxy in `caddy/`.
+`docker-compose.yml` defines the production-like app runtime. It does not hard-code a
+deployment domain and can sit behind Nginx, Caddy, Traefik, Cloudflare Tunnel, or another
+reverse proxy.
+
+To use the bundled Caddy reverse proxy, set `PUBLIC_HOST` and enable the `caddy` profile:
+
+```bash
+PUBLIC_HOST=example.com COMPOSE_PROFILES=caddy docker compose up -d
+```
+
+Without that profile, point your host-level reverse proxy at the local published ports:
+frontend `127.0.0.1:4002`, API `127.0.0.1:4001`, and websocket `127.0.0.1:4003`.
 
 ## Tech stack
 
