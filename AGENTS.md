@@ -50,7 +50,7 @@ LSP symbol query unavailable in this harness; reference counts below are cheap t
 
 ## CONVENTIONS
 
-- Root `npm test` is a failing placeholder. Use package commands.
+- Root `npm test` runs available workspace tests; use `npm run typecheck` for TypeScript checks.
 - npm workspaces only declare `./packages/*`; no shared TS package.
 - Docker Compose is canonical runtime. Services use container hostnames: `server`, `redis`, `mysql`.
 - Server TS: Node16 modules, decorators on, strict mode, `strictPropertyInitialization: false`, tests excluded from `tsconfig`.
@@ -60,7 +60,7 @@ LSP symbol query unavailable in this harness; reference counts below are cheap t
 ## ANTI-PATTERNS (THIS PROJECT)
 
 - Do not promise support or maintenance. README marks repo retired/sunset.
-- Do not rely on root `npm test`; it exits with `Error: no test specified`.
+- Do not require frontend `next build` or GraphQL codegen in the fast baseline unless live app infrastructure is available.
 - Do not edit `packages/frontend/src/lib/graphql.ts` by hand. Edit `.graphql` documents/schema flow, then run frontend codegen.
 - Do not treat `packages/server/src/commands/updateSystems.ts` as an active path without checking its deprecation warning.
 - Do not assume `http://localhost` works unless `caddy/` proxy stack is running; direct frontend is `http://localhost:4002`.
@@ -79,6 +79,9 @@ docker network create caddy
 docker compose -f docker-compose.yml -f docker-compose.dev.yml up
 cd caddy && docker compose up -d
 
+npm run typecheck
+npm test
+
 cd packages/server && npm test
 cd packages/server && npm run scheduler
 cd packages/server && npm run spawns:update
@@ -89,6 +92,45 @@ cd packages/frontend && npm run y
 
 cd packages/ws && npm run prod
 ```
+
+## QUALITY GATES
+
+- Use root-level checks as the canonical verification path for humans, agents, and CI.
+- Run `npm run typecheck` before declaring TypeScript/package changes complete.
+- Run `npm test` before declaring behavior changes complete; this currently runs package tests that exist and skips packages without tests.
+- GitHub Actions mirrors the fast baseline: install dependencies, typecheck all workspaces, then run available tests.
+- Do not add broad lint/formatter churn unless a dedicated decision issue approves it.
+- Do not make Docker Compose E2E, `next build`, or GraphQL codegen mandatory in the fast baseline without first proving they run without live app infrastructure.
+- See `docs/quality-gates.md` for the current command contract and exclusions.
+
+## DECISION ISSUES
+
+Use GitHub issues as lightweight decision records for non-trivial work blocks. The goal is to preserve why a change exists, not to add bureaucracy.
+
+Before implementation, create or reuse a Decision Issue when any of these apply:
+- The change affects CI, tests, deployment, tooling, agent workflow, or repository process.
+- The change spans multiple packages or architectural boundaries.
+- The change changes data shape, GraphQL/API contracts, database entities, or runtime topology.
+- The change involves tradeoffs or rejected alternatives.
+- Future maintainers may reasonably ask, "why was this done?"
+- The work is expected to produce multiple commits, a branch, or a PR.
+
+Do not create a Decision Issue for:
+- Typo fixes.
+- Obvious single-file bug fixes.
+- Small test additions following existing patterns.
+- Generated-only updates.
+- Mechanical dependency patch bumps without policy or compatibility impact.
+
+When a Decision Issue is warranted:
+1. Search existing open issues first with `gh issue list --search`.
+2. Reuse a matching issue if one exists.
+3. If none exists and GitHub CLI is authenticated, create one before implementation.
+4. Use the structure from `.github/ISSUE_TEMPLATE/decision.md`.
+5. Reference the issue from the PR description or commit body with `Refs #N` or `Closes #N`.
+6. Apply a `decision` label when available; do not block work if the repo has no such label.
+
+Keep issues concise. Prefer one issue per work theme, not one issue per commit.
 
 ## NOTES
 
