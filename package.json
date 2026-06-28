@@ -4,7 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npm run test --workspaces --if-present",
+    "test:server": "npm run test --workspace server",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "typecheck:server": "npm run typecheck --workspace server",
+    "typecheck:frontend": "npm run typecheck --workspace frontend",
+    "typecheck:ws": "npm run typecheck --workspace websocket"
   },
   "workspaces": [
     "./packages/*"

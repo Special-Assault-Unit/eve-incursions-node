@@ -12,6 +12,7 @@
     "rats:update": "ts-node --swc src/run.ts updateRats",
     "hsspawn:calculate": "ts-node --swc src/run.ts calculateHSSpawn",
     "systems:update": "ts-node --swc src/run.ts updateSystems",
+    "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "prod": "concurrently -k npm:single npm:scheduler"
   },
