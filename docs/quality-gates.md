@@ -2,7 +2,7 @@
 
 This repository uses small, fast checks as the baseline for human and agent-assisted changes. The goal is to catch regressions without turning every change into a full Docker integration run.
 
-Related decision record: [Issue #1](https://github.com/Shadowlauch/eve-incursions-node/issues/1).
+Related decision record: [Issue #1](https://github.com/Special-Assault-Unit/eve-incursions-node/issues/1).
 
 ## Canonical Commands
 
