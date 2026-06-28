@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "ci": "npm run typecheck && npm test",
     "test": "npm run test --workspaces --if-present",
     "test:server": "npm run test --workspace server",
     "typecheck": "npm run typecheck --workspaces --if-present",
