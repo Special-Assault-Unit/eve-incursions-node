@@ -43,12 +43,20 @@ MYSQL_DB=eve-incursions
 # Optional: hostname used by the bundled Caddy profile.
 # Leave as localhost for local development, or set during deployment.
 PUBLIC_HOST=localhost
+
+# Optional: Discord webhook notifications for matching incursion regions.
+# Omit either variable to disable notifications.
+DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/...
+NOTIFICATION_FILTERS=[{"regionNames":["Innsmother"]}]
 ```
 
 `MYSQL_HOST` is the compose service name (`mysql`) when running in Docker.
 The app ports bind to `127.0.0.1` by default so a host-level reverse proxy can sit in
 front of them. Override `SERVER_BIND`, `FRONTEND_BIND`, `WS_BIND`, or `MYSQL_BIND` only
 when you intentionally want wider exposure.
+
+Discord notifications match region names exactly, case-insensitively. The v1 notifier
+sends one message when a matching incursion starts and one when it ends.
 
 ## Run it locally
 

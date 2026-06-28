@@ -26,6 +26,8 @@ services:
       - MYSQL_USER
       - MYSQL_PASSWORD
       - MYSQL_DB
+      - DISCORD_WEBHOOK_URL
+      - NOTIFICATION_FILTERS
     labels:
       caddy: ${PUBLIC_HOST:-localhost}
       caddy.reverse_proxy: /api* {{upstreams 4001}}
