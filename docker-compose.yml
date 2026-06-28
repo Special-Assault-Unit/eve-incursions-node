@@ -1,39 +1,76 @@
-
 services:
+  init:
+    image: node:22-alpine
+    working_dir: /eve-incursions
+    volumes:
+      - ./:/eve-incursions
+    command: npm i
+
   server:
     image: node:22-alpine
     working_dir: /eve-incursions/packages/server
+    command: sh -c "npm run prod"
     restart: unless-stopped
+    depends_on:
+      init:
+        condition: service_completed_successfully
     networks:
       - caddy
       - internal
     volumes:
       - ./:/eve-incursions
+    ports:
+      - "${SERVER_BIND:-127.0.0.1}:${SERVER_PORT:-4001}:4001"
     environment:
       - MYSQL_HOST
       - MYSQL_USER
       - MYSQL_PASSWORD
       - MYSQL_DB
+    labels:
+      caddy: ${PUBLIC_HOST:-localhost}
+      caddy.reverse_proxy: /api* {{upstreams 4001}}
+      caddy.@cachedFiles.path: "*.jpg *.jpeg *.png *.gif *.ico *.svg"
+      caddy.header: '@cachedFiles Cache-Control "public, max-age=604800, must-revalidate"'
 
   ws:
     image: node:22-alpine
     working_dir: /eve-incursions/packages/ws
+    command: sh -c "npm run prod"
     restart: unless-stopped
+    depends_on:
+      init:
+        condition: service_completed_successfully
     networks:
-      - internal
       - caddy
+      - internal
     volumes:
       - ./:/eve-incursions
+    ports:
+      - "${WS_BIND:-127.0.0.1}:${WS_PORT:-4003}:4003"
+    labels:
+      caddy: ${PUBLIC_HOST:-localhost}
+      caddy.reverse_proxy: /ws {{upstreams 4003}}
 
   frontend:
     image: node:22-alpine
     working_dir: /eve-incursions/packages/frontend
+    command: sh -c "npm run build && npm start"
     restart: unless-stopped
+    depends_on:
+      init:
+        condition: service_completed_successfully
     networks:
       - caddy
       - internal
     volumes:
       - ./:/eve-incursions
+    ports:
+      - "${FRONTEND_BIND:-127.0.0.1}:${FRONTEND_PORT:-4002}:3000"
+    labels:
+      caddy: ${PUBLIC_HOST:-localhost}
+      caddy.reverse_proxy: /* {{upstreams 3000}}
+      caddy.@cachedFiles.path: "*.jpg *.jpeg *.png *.gif *.ico *.svg"
+      caddy.header: '@cachedFiles Cache-Control "public, max-age=604800, must-revalidate"'
 
   mysql:
     image: mariadb:10.11
@@ -47,7 +84,7 @@ services:
     networks:
       - internal
     ports:
-    - 3313:3306
+      - "${MYSQL_BIND:-127.0.0.1}:${MYSQL_PORT:-3313}:3306"
 
   redis:
     image: redis:7-alpine
@@ -55,11 +92,28 @@ services:
     networks:
       - internal
 
+  caddy:
+    image: lucaslorentz/caddy-docker-proxy:ci-alpine
+    profiles:
+      - caddy
+    restart: unless-stopped
+    ports:
+      - ${CADDY_HTTP_PORT:-80}:80
+      - ${CADDY_HTTPS_PORT:-443}:443
+    environment:
+      - CADDY_INGRESS_NETWORKS=eve-incursions-caddy
+    networks:
+      - caddy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - caddy_data:/data
+
 
 volumes:
   eve-incursions-mysql-data:
+  caddy_data:
 
 networks:
   caddy:
-    external: true
+    name: eve-incursions-caddy
   internal:
