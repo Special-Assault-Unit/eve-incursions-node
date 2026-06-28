@@ -22,6 +22,8 @@
     "@apollo/server": "^5.5.0",
     "concurrently": "^9.2.0",
     "graphql": "^16.6.0",
+    "graphql-depth-limit": "^1.1.0",
+    "graphql-query-complexity": "^1.1.1",
     "graphql-scalars": "^1.24.0",
     "ioredis": "^5.3.1",
     "mysql2": "^3.11.0",
@@ -32,12 +34,12 @@
     "wait-port": "^1.0.4"
   },
   "devDependencies": {
-    "@types/node-schedule": "^2.1.0",
-    "vitest": "^3.2.0",
     "@swc/core": "^1.7.0",
     "@swc/helpers": "^0.5.0",
+    "@types/node-schedule": "^2.1.0",
     "nodemon": "^3.1.0",
     "ts-node": "^10.9.0",
-    "typescript": "^6.0.0"
+    "typescript": "^6.0.0",
+    "vitest": "^3.2.0"
   }
 }

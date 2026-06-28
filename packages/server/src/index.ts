@@ -7,6 +7,7 @@ import {CommunityResolver} from './resolvers/CommunityResolver';
 import {SpawnLogResolver} from './resolvers/SpawnLogResolver';
 import {RatResolver} from './resolvers/RatResolver';
 import {AppDataSource} from './lib/data-source';
+import {buildValidationRules} from './lib/graphqlValidationRules';
 
 async function main() {
   await waitPort({host: process.env.MYSQL_HOST, port: 3306});
@@ -14,7 +15,7 @@ async function main() {
   const schema = await buildSchema({
     resolvers: [SpawnResolver, CommunityResolver, SpawnLogResolver, RatResolver]
   })
-  const server = new ApolloServer({ schema })
+  const server = new ApolloServer({schema, validationRules: buildValidationRules()})
   const { url } = await startStandaloneServer(server, { listen: { port: 4001 } });
   console.log(`Server has started at ${url}`)
 }
